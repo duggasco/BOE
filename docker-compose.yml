@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: boe-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:3001
+    networks:
+      - boe-network
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: boe-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DATABASE_URL=postgresql://boeuser:boepass@postgres:5432/boedb
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev-secret-change-in-production
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - boe-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: boe-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=boeuser
+      - POSTGRES_PASSWORD=boepass
+      - POSTGRES_DB=boedb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - boe-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: boe-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - boe-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: boe-pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@boe.local
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    depends_on:
+      - postgres
+    networks:
+      - boe-network
+
+networks:
+  boe-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:

@@ -1,0 +1,26 @@
+// Re-export all types from report.ts
+export type {
+  ReportDefinition,
+  ReportSection,
+  GridLayout,
+  DataQuery,
+  Field,
+  Filter,
+  FilterOperator,
+  GlobalFilter,
+  Sort,
+  Aggregation,
+  Parameter,
+  ParameterOption,
+  DataSource,
+  Formatting,
+  BorderStyle,
+  ConditionalFormat,
+  FieldFormat,
+  ChartConfig,
+  AxisConfig,
+  LegendConfig,
+  TableConfig,
+  TableColumn,
+  TotalRow
+} from './report';

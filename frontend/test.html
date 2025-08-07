@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Frontend</title>
+</head>
+<body>
+    <h1>Testing Frontend</h1>
+    <div id="output"></div>
+    <script>
+        fetch('http://localhost:5173/src/main.tsx')
+            .then(res => res.text())
+            .then(text => {
+                document.getElementById('output').innerHTML = 'Main.tsx loaded: ' + text.length + ' chars';
+                
+                // Check for errors
+                if (text.includes('error') || text.includes('Error')) {
+                    console.error('Found error in main.tsx');
+                }
+            })
+            .catch(err => {
+                document.getElementById('output').innerHTML = 'Error: ' + err;
+            });
+    </script>
+</body>
+</html>
