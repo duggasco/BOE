@@ -4,7 +4,7 @@ import { SettingOutlined, UserOutlined, DatabaseOutlined, DashboardOutlined } fr
 import FieldManagement from '../components/Admin/FieldManagement';
 import UserManagement from '../components/Admin/UserManagement';
 import SystemSettings from '../components/Admin/SystemSettings';
-import Monitoring from '../components/Admin/Monitoring';
+// import Monitoring from '../components/Admin/Monitoring';
 
 const AdminPanel: React.FC = () => {
   const EmptyState = ({ title }: { title: string }) => (
@@ -53,16 +53,16 @@ const AdminPanel: React.FC = () => {
       ),
       children: <SystemSettings />
     },
-    { 
-      key: 'monitoring', 
-      label: (
-        <span>
-          <DashboardOutlined style={{ marginRight: 8 }} />
-          Monitoring
-        </span>
-      ),
-      children: <Monitoring />
-    },
+    // { 
+    //   key: 'monitoring', 
+    //   label: (
+    //     <span>
+    //       <DashboardOutlined style={{ marginRight: 8 }} />
+    //       Monitoring
+    //     </span>
+    //   ),
+    //   children: <Monitoring />
+    // },
   ];
 
   return (

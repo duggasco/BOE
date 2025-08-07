@@ -1,0 +1,231 @@
+/* Theme CSS Variables */
+
+:root {
+  /* Light theme colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f0f2f5;
+  --color-bg-tertiary: #fafafa;
+  --color-bg-elevated: #ffffff;
+  --color-bg-sidebar: #1a1f2e;
+  --color-bg-header: #ffffff;
+  
+  --color-text-primary: #000000;
+  --color-text-secondary: #595959;
+  --color-text-tertiary: #8c8c8c;
+  --color-text-inverse: #ffffff;
+  
+  --color-border-primary: #d9d9d9;
+  --color-border-secondary: #f0f0f0;
+  
+  --color-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --color-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --color-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  --color-primary: #1890ff;
+  --color-success: #52c41a;
+  --color-warning: #faad14;
+  --color-error: #ff4d4f;
+  --color-info: #1890ff;
+  
+  /* Component specific */
+  --sidebar-bg: #1a1f2e;
+  --sidebar-text: #e8e8e8;
+  --sidebar-hover: rgba(255, 255, 255, 0.1);
+  --sidebar-active: rgba(24, 144, 255, 0.2);
+  
+  /* Transitions */
+  --transition-theme: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+[data-theme="dark"] {
+  /* Dark theme colors */
+  --color-bg-primary: #0f1419;
+  --color-bg-secondary: #0a0d13;
+  --color-bg-tertiary: #1a1f2e;
+  --color-bg-elevated: #1f252f;
+  --color-bg-sidebar: #0a0d13;
+  --color-bg-header: #0f1419;
+  
+  --color-text-primary: #e8e8e8;
+  --color-text-secondary: #a8a8a8;
+  --color-text-tertiary: #6b6b6b;
+  --color-text-inverse: #000000;
+  
+  --color-border-primary: #303640;
+  --color-border-secondary: #1f232b;
+  
+  --color-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --color-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --color-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  
+  /* Adjust primary colors for dark mode */
+  --color-primary: #40a9ff;
+  --color-success: #73d13d;
+  --color-warning: #ffc53d;
+  --color-error: #ff7875;
+  --color-info: #40a9ff;
+  
+  /* Component specific */
+  --sidebar-bg: #0a0d13;
+  --sidebar-text: #e8e8e8;
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-active: rgba(64, 169, 255, 0.2);
+}
+
+/* Apply transitions only to specific elements that need smooth theme changes */
+body,
+.ant-layout,
+.ant-layout-header,
+.ant-layout-sider,
+.ant-layout-content,
+.ant-card,
+.ant-table,
+.ant-btn,
+.ant-input,
+.ant-select-selector {
+  transition: var(--transition-theme);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .ant-layout,
+  .ant-layout-header,
+  .ant-layout-sider,
+  .ant-layout-content,
+  .ant-card,
+  .ant-table,
+  .ant-btn,
+  .ant-input,
+  .ant-select-selector {
+    transition: none !important;
+  }
+}
+
+/* Override Ant Design components for better dark mode */
+[data-theme="dark"] .ant-card {
+  background-color: var(--color-bg-elevated);
+  border-color: var(--color-border-secondary);
+}
+
+[data-theme="dark"] .ant-table {
+  background-color: var(--color-bg-elevated);
+}
+
+[data-theme="dark"] .ant-table-thead > tr > th {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-border-secondary);
+}
+
+[data-theme="dark"] .ant-table-tbody > tr > td {
+  border-color: var(--color-border-secondary);
+}
+
+[data-theme="dark"] .ant-table-tbody > tr:hover > td {
+  background-color: var(--color-bg-tertiary);
+}
+
+[data-theme="dark"] .ant-modal-content {
+  background-color: var(--color-bg-elevated);
+}
+
+[data-theme="dark"] .ant-modal-header {
+  background-color: var(--color-bg-elevated);
+  border-color: var(--color-border-secondary);
+}
+
+[data-theme="dark"] .ant-tabs-tab {
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .ant-tabs-tab-active {
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .ant-input,
+[data-theme="dark"] .ant-select-selector,
+[data-theme="dark"] .ant-picker {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-border-primary);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .ant-input:hover,
+[data-theme="dark"] .ant-select-selector:hover,
+[data-theme="dark"] .ant-picker:hover {
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .ant-btn {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-border-primary);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .ant-btn:hover {
+  background-color: var(--color-bg-elevated);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .ant-btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .ant-dropdown-menu {
+  background-color: var(--color-bg-elevated);
+}
+
+[data-theme="dark"] .ant-dropdown-menu-item:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+/* Sidebar styles */
+[data-theme="dark"] .sidebar {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+}
+
+[data-theme="dark"] .sidebar .ant-menu {
+  background-color: transparent;
+  color: var(--sidebar-text);
+}
+
+[data-theme="dark"] .sidebar .ant-menu-item:hover {
+  background-color: var(--sidebar-hover);
+}
+
+[data-theme="dark"] .sidebar .ant-menu-item-selected {
+  background-color: var(--sidebar-active);
+}
+
+/* Header styles */
+[data-theme="dark"] .header {
+  background-color: var(--color-bg-header);
+  border-bottom-color: var(--color-border-secondary);
+}
+
+/* Charts adjustments for dark mode */
+[data-theme="dark"] .recharts-cartesian-grid-horizontal line,
+[data-theme="dark"] .recharts-cartesian-grid-vertical line {
+  stroke: var(--color-border-secondary);
+}
+
+[data-theme="dark"] .recharts-text {
+  fill: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .recharts-layer.recharts-reference-line text {
+  fill: var(--color-text-secondary);
+}
+
+/* AG Grid dark mode adjustments */
+[data-theme="dark"] .ag-theme-quartz {
+  --ag-background-color: var(--color-bg-elevated);
+  --ag-header-background-color: var(--color-bg-tertiary);
+  --ag-odd-row-background-color: var(--color-bg-primary);
+  --ag-border-color: var(--color-border-secondary);
+  --ag-header-foreground-color: var(--color-text-primary);
+  --ag-foreground-color: var(--color-text-primary);
+  --ag-row-hover-color: var(--color-bg-tertiary);
+}

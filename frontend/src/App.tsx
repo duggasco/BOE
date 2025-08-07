@@ -1,8 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { ConfigProvider, App as AntApp } from 'antd';
+import { App as AntApp } from 'antd';
 import { store } from './store';
+import { ThemeProvider } from './contexts/ThemeContext';
 import MainLayout from './components/Layout/MainLayout';
 import ReportBuilder from './pages/ReportBuilder';
 import ReportList from './pages/ReportList';
@@ -11,6 +12,7 @@ import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
 import { useAuth } from './hooks/useAuth';
 import './App.css';
+import './styles/theme.css';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -23,14 +25,7 @@ function App() {
   try {
     return (
       <Provider store={store}>
-        <ConfigProvider
-          theme={{
-            token: {
-              colorPrimary: '#1890ff',
-              borderRadius: 4,
-            },
-          }}
-        >
+        <ThemeProvider>
           <AntApp>
             <Router>
               <Routes>
@@ -53,7 +48,7 @@ function App() {
               </Routes>
             </Router>
           </AntApp>
-        </ConfigProvider>
+        </ThemeProvider>
       </Provider>
     );
   } catch (error) {

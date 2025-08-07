@@ -13,6 +13,7 @@ import {
   BellOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import ThemeToggle from '../ThemeToggle';
 
 const { Header, Sider, Content } = Layout;
 
@@ -73,7 +74,7 @@ const MainLayout: React.FC = () => {
           top: 0,
           bottom: 0,
           zIndex: mobileView ? 1000 : 1,
-          backgroundColor: '#0f1419',
+          backgroundColor: 'var(--sidebar-bg)',
           boxShadow: '2px 0 8px rgba(0,0,0,0.15)',
         }}
         trigger={
@@ -142,17 +143,17 @@ const MainLayout: React.FC = () => {
       <Layout style={{ 
         marginLeft: mobileView && collapsed ? 0 : (mobileView ? 200 : (collapsed ? 80 : 240)),
         transition: 'margin-left 0.2s',
-        backgroundColor: '#f0f2f5',
+        backgroundColor: 'var(--color-bg-secondary)',
         minHeight: '100vh',
       }}>
         <Header style={{ 
           padding: 0, 
-          background: '#fff',
+          background: 'var(--color-bg-header)',
           position: mobileView ? 'fixed' : 'sticky',
           width: '100%',
           top: 0,
           zIndex: 999,
-          boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+          boxShadow: 'var(--color-shadow-sm)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -176,6 +177,7 @@ const MainLayout: React.FC = () => {
                 />
               </div>
               <Space size={20}>
+                <ThemeToggle />
                 <Badge count={5} size="small">
                   <Button
                     type="text"

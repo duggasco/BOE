@@ -2,7 +2,41 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
-## [0.21.0] - 2025-08-07 (Latest)
+## [0.22.0] - 2025-08-07 (Latest)
+
+### Added - Dark Mode Support (Phase 2 UI Polish)
+
+#### Complete Dark Mode Implementation with Production Improvements
+Implemented a comprehensive dark mode system with critical performance and accessibility improvements:
+
+**Components Created:**
+- `/contexts/ThemeContext.tsx` - React Context with theme provider
+- `/styles/theme.css` - CSS custom properties for theming
+- `/components/ThemeToggle.tsx` - Theme switcher component
+- `/utils/themeScript.ts` - FOUC prevention script
+
+**Key Features:**
+1. **Three Theme Modes:** Light, Dark, and System (follows OS preference)
+2. **Persistence:** Theme choice saved to localStorage
+3. **Smooth Transitions:** Targeted transitions for better performance
+4. **System Integration:** Respects OS dark mode preference
+5. **Ant Design Integration:** Full theme support for all components
+
+**Critical Improvements After Self-Review:**
+1. **Performance Fix:** Removed universal transition (`*`) that caused jank, now only specific elements transition
+2. **Accessibility:** Added `prefers-reduced-motion` support for users with motion sensitivity
+3. **FOUC Prevention:** Inline script applies theme before React loads
+4. **Type Safety:** Validation for localStorage values to prevent crashes
+5. **Memory Management:** Proper event listener cleanup
+6. **Meta Theme Color:** Updates browser chrome on mobile devices
+
+**Technical Decisions:**
+- CSS custom properties over CSS-in-JS for better performance
+- Document-level theme application for consistency
+- Ant Design's darkAlgorithm for component theming
+- System theme detection with proper fallbacks
+
+## [0.21.0] - 2025-08-07
 
 ### Added - Monitoring Dashboard (Phase 2 - 70% Complete)
 
