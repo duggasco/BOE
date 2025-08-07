@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons';
 import ThemeToggle from '../ThemeToggle';
 import { useViewport } from '../../contexts/ViewportContext';
+import { InteractiveWalkthrough } from '../common/InteractiveWalkthrough';
 
 const { Header, Sider, Content } = Layout;
 
@@ -38,16 +39,19 @@ const MainLayout: React.FC = () => {
       key: '/reports',
       icon: <FileTextOutlined />,
       label: 'Reports',
+      'data-tour': 'reports-menu',
     },
     {
       key: '/schedules',
       icon: <ScheduleOutlined />,
       label: 'Schedules',
+      'data-tour': 'schedules-menu',
     },
     {
       key: '/admin',
       icon: <SettingOutlined />,
       label: 'Admin',
+      'data-tour': 'admin-menu',
     },
   ];
 
@@ -227,6 +231,7 @@ const MainLayout: React.FC = () => {
           <Outlet />
         </Content>
       </Layout>
+      <InteractiveWalkthrough />
     </Layout>
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { App as AntApp } from 'antd';
@@ -13,6 +13,8 @@ import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
 import { useAuth } from './hooks/useAuth';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import { loadSampleReports } from './data/sampleReports';
+import ErrorTestComponent from './components/test/ErrorTestComponent';
 import './App.css';
 import './styles/theme.css';
 
@@ -23,6 +25,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 function App() {
   console.log('App component rendering...');
+  
+  useEffect(() => {
+    // Load sample reports on app initialization
+    const loaded = loadSampleReports();
+    if (loaded) {
+      console.log('Sample reports loaded for demo');
+    }
+  }, []);
   
   try {
     return (
@@ -48,6 +58,7 @@ function App() {
                       <Route path="reports/:id/edit" element={<ReportBuilder />} />
                       <Route path="schedules" element={<ScheduleManager />} />
                       <Route path="admin" element={<AdminPanel />} />
+                      <Route path="test-error" element={<ErrorTestComponent />} />
                     </Route>
                   </Routes>
                 </Router>

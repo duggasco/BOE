@@ -296,15 +296,17 @@ const ReportBuilder: React.FC = () => {
                 icon={<UndoOutlined />}
                 onClick={() => dispatch(undo())}
                 title="Undo"
+                data-tour="undo-btn"
               />
               <Button
                 icon={<RedoOutlined />}
                 onClick={() => dispatch(redo())}
                 title="Redo"
+                data-tour="redo-btn"
               />
               
               <Dropdown menu={addSectionMenu}>
-                <Button icon={<PlusOutlined />}>
+                <Button icon={<PlusOutlined />} data-tour="add-section-btn">
                   Add Section
                 </Button>
               </Dropdown>
@@ -314,6 +316,7 @@ const ReportBuilder: React.FC = () => {
                 icon={<PlayCircleOutlined />}
                 onClick={handleRun}
                 loading={Object.values(queryLoading).some(l => l)}
+                data-tour="run-btn"
               >
                 Run
               </Button>
@@ -321,6 +324,7 @@ const ReportBuilder: React.FC = () => {
               <Button
                 icon={<SaveOutlined />}
                 onClick={handleSave}
+                data-tour="save-btn"
               >
                 Save
               </Button>
@@ -328,6 +332,7 @@ const ReportBuilder: React.FC = () => {
               <Button 
                 icon={<ExportOutlined />}
                 onClick={handleExport}
+                data-tour="export-btn"
               >
                 Export
               </Button>
@@ -337,6 +342,7 @@ const ReportBuilder: React.FC = () => {
                 onClick={() => setPropertiesDrawerOpen(!propertiesDrawerOpen)}
                 type={propertiesDrawerOpen ? 'primary' : 'default'}
                 title="Properties Panel"
+                data-tour="properties-btn"
               >
                 Properties
               </Button>
@@ -351,11 +357,12 @@ const ReportBuilder: React.FC = () => {
               collapsed={collapsed}
               onCollapse={setCollapsed}
               trigger={null}
+              data-tour="field-selector"
             >
               <FieldSelector />
             </Sider>
             
-            <Content className={styles.canvas} style={{ marginRight: 0 }}>
+            <Content className={styles.canvas} style={{ marginRight: 0 }} data-tour="canvas">
               <ReportCanvas
                 sections={currentReport?.sections || []}
                 queryResults={queryResults}
@@ -375,6 +382,7 @@ const ReportBuilder: React.FC = () => {
               padding: 0,
             }
           }}
+          data-tour="properties-panel"
         >
           <PropertiesPanel
             selectedSectionId={selectedSectionId}

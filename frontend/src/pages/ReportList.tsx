@@ -10,7 +10,7 @@ const ReportList: React.FC = () => {
   const navigate = useNavigate();
   const { isMobile } = useViewport();
   
-  // Simulate API call with new hook
+  // Fetch reports from localStorage with simulated delay
   const fetchReports = async (signal: AbortSignal) => {
     // Simulate network delay
     await new Promise((resolve, reject) => {
@@ -21,11 +21,18 @@ const ReportList: React.FC = () => {
       });
     });
     
-    // Mock data
-    const reports = [
-      { id: '1', name: 'Sales Report', lastModified: '2025-08-06', owner: 'Demo User' },
-      { id: '2', name: 'Financial Dashboard', lastModified: '2025-08-05', owner: 'Demo User' },
-    ];
+    // Get saved reports from localStorage
+    const savedReports = JSON.parse(localStorage.getItem('savedReports') || '[]');
+    
+    // Transform to display format
+    const reports = savedReports.map((report: any) => ({
+      id: report.id,
+      name: report.name,
+      description: report.description,
+      lastModified: new Date(report.updatedAt).toLocaleDateString(),
+      owner: 'Demo User',
+      sections: report.sections?.length || 0,
+    }));
     
     return reports;
   };
@@ -37,7 +44,28 @@ const ReportList: React.FC = () => {
   );
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
+    { 
+      title: 'Name', 
+      dataIndex: 'name', 
+      key: 'name',
+      render: (text: string, record: any) => (
+        <div>
+          <div style={{ fontWeight: 500 }}>{text}</div>
+          {record.description && (
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
+              {record.description}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: 'Sections',
+      dataIndex: 'sections',
+      key: 'sections',
+      width: 100,
+      responsive: ['md'] as any,
+    },
     { 
       title: 'Last Modified', 
       dataIndex: 'lastModified', 
@@ -92,6 +120,7 @@ const ReportList: React.FC = () => {
             onClick={() => navigate('/reports/new')}
             size={isMobile ? 'middle' : 'large'}
             className={isMobile ? 'mobile-full-width' : ''}
+            data-tour="new-report-btn"
           >
             New Report
           </Button>
