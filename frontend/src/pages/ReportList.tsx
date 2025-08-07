@@ -1,18 +1,40 @@
 import React from 'react';
-import { Card, Table, Button, Space } from 'antd';
+import { Card, Table, Button, Space, Skeleton } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useViewport } from '../contexts/ViewportContext';
+import LoadingState, { TableSkeleton } from '../components/common/LoadingStates';
+import { useAbortableRequest } from '../hooks/useAbortableRequest';
 
 const ReportList: React.FC = () => {
   const navigate = useNavigate();
   const { isMobile } = useViewport();
+  
+  // Simulate API call with new hook
+  const fetchReports = async (signal: AbortSignal) => {
+    // Simulate network delay
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(resolve, 1000);
+      signal.addEventListener('abort', () => {
+        clearTimeout(timeout);
+        reject(new DOMException('Aborted', 'AbortError'));
+      });
+    });
+    
+    // Mock data
+    const reports = [
+      { id: '1', name: 'Sales Report', lastModified: '2025-08-06', owner: 'Demo User' },
+      { id: '2', name: 'Financial Dashboard', lastModified: '2025-08-05', owner: 'Demo User' },
+    ];
+    
+    return reports;
+  };
 
-  // Mock data for now
-  const reports = [
-    { id: '1', name: 'Sales Report', lastModified: '2025-08-06', owner: 'Demo User' },
-    { id: '2', name: 'Financial Dashboard', lastModified: '2025-08-05', owner: 'Demo User' },
-  ];
+  const { data, loading, error, isEmpty, retry } = useAbortableRequest(
+    fetchReports,
+    [],
+    { loadingDelayType: 'network' }
+  );
 
   const columns = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
@@ -48,6 +70,10 @@ const ReportList: React.FC = () => {
     },
   ];
 
+  const handleCreateReport = () => {
+    navigate('/reports/new');
+  };
+
   return (
     <Card 
       title={
@@ -78,18 +104,28 @@ const ReportList: React.FC = () => {
       }}
       styles={{ body: { padding: 0 } }}
     >
-      <Table 
-        dataSource={reports} 
-        columns={columns} 
-        rowKey="id"
-        pagination={{
-          showSizeChanger: true,
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-          defaultPageSize: 10,
-        }}
-        style={{ width: '100%' }}
-        size="middle"
-      />
+      <LoadingState
+        loading={loading}
+        error={error}
+        empty={isEmpty}
+        emptyType="no-reports"
+        onRetry={retry}
+        onAction={handleCreateReport}
+        skeleton={<TableSkeleton columns={4} rows={5} showActions />}
+      >
+        <Table 
+          dataSource={data || []} 
+          columns={columns} 
+          rowKey="id"
+          pagination={{
+            showSizeChanger: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+            defaultPageSize: 10,
+          }}
+          style={{ width: '100%' }}
+          size="middle"
+        />
+      </LoadingState>
     </Card>
   );
 };

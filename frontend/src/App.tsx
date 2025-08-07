@@ -12,6 +12,7 @@ import ScheduleManager from './pages/ScheduleManager';
 import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
 import { useAuth } from './hooks/useAuth';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import './App.css';
 import './styles/theme.css';
 
@@ -25,34 +26,36 @@ function App() {
   
   try {
     return (
-      <Provider store={store}>
-        <ThemeProvider>
-          <ViewportProvider>
-            <AntApp>
-              <Router>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route
-                    path="/"
-                    element={
-                      <ProtectedRoute>
-                        <MainLayout />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route index element={<Navigate to="/reports" />} />
-                    <Route path="reports" element={<ReportList />} />
-                    <Route path="reports/new" element={<ReportBuilder />} />
-                    <Route path="reports/:id/edit" element={<ReportBuilder />} />
-                    <Route path="schedules" element={<ScheduleManager />} />
-                    <Route path="admin" element={<AdminPanel />} />
-                  </Route>
-                </Routes>
-              </Router>
-            </AntApp>
-          </ViewportProvider>
-        </ThemeProvider>
-      </Provider>
+      <ErrorBoundary>
+        <Provider store={store}>
+          <ThemeProvider>
+            <ViewportProvider>
+              <AntApp>
+                <Router>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route
+                      path="/"
+                      element={
+                        <ProtectedRoute>
+                          <MainLayout />
+                        </ProtectedRoute>
+                      }
+                    >
+                      <Route index element={<Navigate to="/reports" />} />
+                      <Route path="reports" element={<ReportList />} />
+                      <Route path="reports/new" element={<ReportBuilder />} />
+                      <Route path="reports/:id/edit" element={<ReportBuilder />} />
+                      <Route path="schedules" element={<ScheduleManager />} />
+                      <Route path="admin" element={<AdminPanel />} />
+                    </Route>
+                  </Routes>
+                </Router>
+              </AntApp>
+            </ViewportProvider>
+          </ThemeProvider>
+        </Provider>
+      </ErrorBoundary>
     );
   } catch (error) {
     console.error('App rendering error:', error);
