@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card, Tabs, Empty } from 'antd';
 import { SettingOutlined, UserOutlined, DatabaseOutlined } from '@ant-design/icons';
+import FieldManagement from '../components/Admin/FieldManagement';
+import UserManagement from '../components/Admin/UserManagement';
 
 const AdminPanel: React.FC = () => {
   const EmptyState = ({ title }: { title: string }) => (
@@ -27,7 +29,7 @@ const AdminPanel: React.FC = () => {
           Field Management
         </span>
       ),
-      children: <EmptyState title="Field management" />
+      children: <FieldManagement />
     },
     { 
       key: 'users', 
@@ -37,7 +39,7 @@ const AdminPanel: React.FC = () => {
           User Management
         </span>
       ),
-      children: <EmptyState title="User management" />
+      children: <UserManagement />
     },
     { 
       key: 'system', 

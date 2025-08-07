@@ -2,7 +2,108 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
-## [0.17.0] - 2025-08-07 (Latest)
+## [0.19.0] - 2025-08-07 (Latest)
+
+### Added - User Management Interface (Phase 2)
+
+#### Complete User Management System
+- **Users Tab**: Full CRUD operations with user list, search, filtering by status/role
+  - User creation/editing with comprehensive form (extracted to UserForm component)
+  - Status management (active/inactive/locked/suspended)
+  - MFA enablement tracking
+  - Role and group assignment using IDs (fixed data model inconsistency)
+  - Password reset functionality (placeholder)
+  - Department and job title tracking
+
+- **Groups Tab**: Group management with member/permission assignment
+  - Create/edit/delete groups
+  - Assign multiple users to groups
+  - Define group permissions
+  - Member count badges
+
+- **Roles Tab**: Role-based access control
+  - System roles protected from modification
+  - Custom role creation (placeholder)
+  - Permission assignment per role
+  - Visual distinction for system vs custom roles
+
+- **Permissions Matrix**: Visual permission configuration
+  - Checkbox grid for role-permission mapping
+  - Resource-based permissions (reports, users, system, fields)
+  - Category organization
+  - Modal interface for bulk updates
+
+#### Technical Improvements
+- **Data Model Fix**: Corrected roles/groups to use IDs instead of names
+- **Component Refactoring**: Extracted UserForm into separate component for better maintainability
+- **Collaborative Development**: Worked with Gemini AI for critical code review
+- **Pragmatic Decisions**: 
+  - Deferred Redux integration to Phase 3 (when backend exists)
+  - Kept mock data for demo purposes
+  - Minimal refactoring to avoid over-engineering
+
+#### Testing
+- Comprehensive testing with Playwright MCP
+- All tabs and functionality verified
+- Forms open/close correctly
+- Data displays properly with correct role mappings
+
+## [0.18.0] - 2025-08-07
+
+### Fixed - Export Dialog Rendering Issue
+
+#### Root Cause Analysis
+- Export Dialog component wasn't rendering despite Redux state correctly updating (isOpen: true)
+- Issue was caused by DndContext interfering with Ant Design Modal's portal rendering
+- Modal components use React portals to render at the end of the body element
+
+#### Solution Implementation
+- Moved `<ExportDialog />` component outside of `<DndContext>` wrapper
+- Removed conditional rendering (`{exportDialogOpen && <ExportDialog />}`)
+- Let Modal component handle its own visibility based on the `open` prop
+- Verified fix with test modal that rendered correctly
+
+#### Technical Details
+- DndContext creates a new stacking context that can interfere with fixed-position elements
+- Ant Design Modals require proper portal rendering outside of drag-and-drop contexts
+- Test modal confirmed that Modal components work when placed correctly
+
+### Phase 2 Development Progress
+
+#### Field Management Interface (COMPLETED)
+- **Comprehensive CRUD Operations**: Full create, read, update, delete functionality for field definitions
+- **Field Hierarchy Tree View**: Visual representation of field categories with expandable tree structure
+- **Advanced Filtering System**: 
+  - Search by field name, display name, or description
+  - Filter by category (Fund Information, Performance, Pricing, etc.)
+  - Filter by field type (Dimension, Measure, Calculated)
+- **Field Types Support**:
+  - Dimensions: Categorical data fields
+  - Measures: Numeric fields with aggregation options
+  - Calculated Fields: Formula-based fields with expression editor
+- **Field Metadata Management**:
+  - Data types (string, number, date, boolean)
+  - Formats (currency, percentage, date formats)
+  - Aggregation methods (sum, avg, count, min, max)
+  - Source table tracking
+  - Tag management for field categorization
+- **Relationship Management**: Modal for viewing and managing field relationships with join conditions
+- **Status Control**: Active/Inactive status for field lifecycle management
+- **Responsive Layout**: Split view with tree hierarchy and detailed table
+- **Professional UI/UX**: 
+  - Ant Design components for consistency
+  - Tooltips for additional information
+  - Icons for visual clarity (calculator for calculated fields)
+  - Color-coded tags for field types
+
+#### Technical Implementation Details
+- React functional components with TypeScript
+- Form validation for field name patterns (lowercase, underscores)
+- Conditional form fields based on field type selection
+- Mock data structure ready for backend integration
+- Proper state management with React hooks
+
+## [0.17.0] - 2025-08-07
 
 ### Testing & Validation Complete
 

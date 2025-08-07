@@ -53,14 +53,6 @@ const ReportBuilder: React.FC = () => {
   );
   const queryResults = useSelector((state: RootState) => state.query.results);
   const queryLoading = useSelector((state: RootState) => state.query.loading);
-  const exportState = useSelector((state: RootState) => state.export);
-  const exportDialogOpen = exportState?.isOpen || false;
-  
-  // Debug export dialog state
-  useEffect(() => {
-    console.log('Export state:', exportState);
-    console.log('Export dialog isOpen:', exportDialogOpen);
-  }, [exportState, exportDialogOpen]);
   
   useEffect(() => {
     if (id && id !== 'new') {
@@ -230,7 +222,6 @@ const ReportBuilder: React.FC = () => {
   };
   
   const handleExport = () => {
-    console.log('handleExport called');
     // Allow export even for unsaved reports
     const reportId = currentReport?.id || `temp-${Date.now()}`;
     const reportName = currentReport?.name || 'Unsaved Report';
@@ -266,7 +257,6 @@ const ReportBuilder: React.FC = () => {
       reportId: reportId,
       reportName: reportName,
     }));
-    console.log('Export dialog should be open, isOpen:', exportDialogOpen);
   };
   
   const handleAddSection = (type: ReportSection['type']) => {
@@ -292,108 +282,110 @@ const ReportBuilder: React.FC = () => {
   
   
   return (
-    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <Layout className={styles.reportBuilder}>
-        <Header className={styles.header}>
-          <div className={styles.headerLeft}>
-            <h2>{currentReport?.name || 'New Report'}</h2>
-            {isDirty && <span className={styles.unsaved}>*</span>}
-          </div>
-          
-          <Space>
-            <Button
-              icon={<UndoOutlined />}
-              onClick={() => dispatch(undo())}
-              title="Undo"
-            />
-            <Button
-              icon={<RedoOutlined />}
-              onClick={() => dispatch(redo())}
-              title="Redo"
-            />
+    <>
+      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <Layout className={styles.reportBuilder}>
+          <Header className={styles.header}>
+            <div className={styles.headerLeft}>
+              <h2>{currentReport?.name || 'New Report'}</h2>
+              {isDirty && <span className={styles.unsaved}>*</span>}
+            </div>
             
-            <Dropdown menu={addSectionMenu}>
-              <Button icon={<PlusOutlined />}>
-                Add Section
+            <Space>
+              <Button
+                icon={<UndoOutlined />}
+                onClick={() => dispatch(undo())}
+                title="Undo"
+              />
+              <Button
+                icon={<RedoOutlined />}
+                onClick={() => dispatch(redo())}
+                title="Redo"
+              />
+              
+              <Dropdown menu={addSectionMenu}>
+                <Button icon={<PlusOutlined />}>
+                  Add Section
+                </Button>
+              </Dropdown>
+              
+              <Button
+                type="primary"
+                icon={<PlayCircleOutlined />}
+                onClick={handleRun}
+                loading={Object.values(queryLoading).some(l => l)}
+              >
+                Run
               </Button>
-            </Dropdown>
-            
-            <Button
-              type="primary"
-              icon={<PlayCircleOutlined />}
-              onClick={handleRun}
-              loading={Object.values(queryLoading).some(l => l)}
-            >
-              Run
-            </Button>
-            
-            <Button
-              icon={<SaveOutlined />}
-              onClick={handleSave}
-            >
-              Save
-            </Button>
-            
-            <Button 
-              icon={<ExportOutlined />}
-              onClick={handleExport}
-            >
-              Export
-            </Button>
-            
-            <Button
-              icon={<SettingOutlined />}
-              onClick={() => setPropertiesDrawerOpen(!propertiesDrawerOpen)}
-              type={propertiesDrawerOpen ? 'primary' : 'default'}
-              title="Properties Panel"
-            >
-              Properties
-            </Button>
-          </Space>
-        </Header>
-        
-        <Layout>
-          <Sider
-            width={280}
-            className={styles.leftPanel}
-            collapsible
-            collapsed={collapsed}
-            onCollapse={setCollapsed}
-            trigger={null}
-          >
-            <FieldSelector />
-          </Sider>
+              
+              <Button
+                icon={<SaveOutlined />}
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+              
+              <Button 
+                icon={<ExportOutlined />}
+                onClick={handleExport}
+              >
+                Export
+              </Button>
+              
+              <Button
+                icon={<SettingOutlined />}
+                onClick={() => setPropertiesDrawerOpen(!propertiesDrawerOpen)}
+                type={propertiesDrawerOpen ? 'primary' : 'default'}
+                title="Properties Panel"
+              >
+                Properties
+              </Button>
+            </Space>
+          </Header>
           
-          <Content className={styles.canvas} style={{ marginRight: 0 }}>
-            <ReportCanvas
-              sections={currentReport?.sections || []}
-              queryResults={queryResults}
-            />
-          </Content>
+          <Layout>
+            <Sider
+              width={280}
+              className={styles.leftPanel}
+              collapsible
+              collapsed={collapsed}
+              onCollapse={setCollapsed}
+              trigger={null}
+            >
+              <FieldSelector />
+            </Sider>
+            
+            <Content className={styles.canvas} style={{ marginRight: 0 }}>
+              <ReportCanvas
+                sections={currentReport?.sections || []}
+                queryResults={queryResults}
+              />
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
+        
+        <Drawer
+          title="Properties"
+          placement="right"
+          width={400}
+          onClose={() => setPropertiesDrawerOpen(false)}
+          open={propertiesDrawerOpen}
+          styles={{
+            body: {
+              padding: 0,
+            }
+          }}
+        >
+          <PropertiesPanel
+            selectedSectionId={selectedSectionId}
+            sections={currentReport?.sections || []}
+          />
+        </Drawer>
+      </DndContext>
       
-      <Drawer
-        title="Properties"
-        placement="right"
-        width={400}
-        onClose={() => setPropertiesDrawerOpen(false)}
-        open={propertiesDrawerOpen}
-        styles={{
-          body: {
-            padding: 0,
-          }
-        }}
-      >
-        <PropertiesPanel
-          selectedSectionId={selectedSectionId}
-          sections={currentReport?.sections || []}
-        />
-      </Drawer>
-      
-      {/* Export Dialog - conditionally rendered for performance */}
-      {exportDialogOpen && <ExportDialog />}
-    </DndContext>
+      {/* Export Dialog - outside DndContext for proper portal rendering */}
+      <ExportDialog />
+    </>
   );
 };
 

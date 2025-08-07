@@ -26,10 +26,18 @@ import PromptPanel from './PromptPanel';
 
 const { TabPane } = Tabs;
 
+console.log('ExportDialog component file loaded');
+
 const ExportDialog: React.FC = () => {
   const dispatch = useDispatch();
   const exportState = useSelector(selectExport);
   const validation = useSelector(selectExportValidation);
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('ExportDialog rendering, isOpen:', exportState.isOpen);
+    console.log('Full export state:', exportState);
+  }, [exportState]);
   
   // Validate on mount and when relevant state changes
   useEffect(() => {
