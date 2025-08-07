@@ -46,7 +46,6 @@ const ReportBuilder: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   
   const [collapsed, setCollapsed] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
   const [propertiesDrawerOpen, setPropertiesDrawerOpen] = useState(false);
   
   const { currentReport, selectedSectionId, isDirty, draggedField } = useSelector(
@@ -54,6 +53,14 @@ const ReportBuilder: React.FC = () => {
   );
   const queryResults = useSelector((state: RootState) => state.query.results);
   const queryLoading = useSelector((state: RootState) => state.query.loading);
+  const exportState = useSelector((state: RootState) => state.export);
+  const exportDialogOpen = exportState?.isOpen || false;
+  
+  // Debug export dialog state
+  useEffect(() => {
+    console.log('Export state:', exportState);
+    console.log('Export dialog isOpen:', exportDialogOpen);
+  }, [exportState, exportDialogOpen]);
   
   useEffect(() => {
     if (id && id !== 'new') {
@@ -223,6 +230,7 @@ const ReportBuilder: React.FC = () => {
   };
   
   const handleExport = () => {
+    console.log('handleExport called');
     // Allow export even for unsaved reports
     const reportId = currentReport?.id || `temp-${Date.now()}`;
     const reportName = currentReport?.name || 'Unsaved Report';
@@ -258,6 +266,7 @@ const ReportBuilder: React.FC = () => {
       reportId: reportId,
       reportName: reportName,
     }));
+    console.log('Export dialog should be open, isOpen:', exportDialogOpen);
   };
   
   const handleAddSection = (type: ReportSection['type']) => {
@@ -364,8 +373,6 @@ const ReportBuilder: React.FC = () => {
         </Layout>
       </Layout>
       
-      <ExportDialog />
-      
       <Drawer
         title="Properties"
         placement="right"
@@ -383,6 +390,9 @@ const ReportBuilder: React.FC = () => {
           sections={currentReport?.sections || []}
         />
       </Drawer>
+      
+      {/* Export Dialog - conditionally rendered for performance */}
+      {exportDialogOpen && <ExportDialog />}
     </DndContext>
   );
 };

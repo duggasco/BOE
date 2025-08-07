@@ -204,10 +204,9 @@ export const exportSlice = createSlice({
     },
     
     closeExportDialog: (state) => {
-      state.isOpen = false;
-      state.validation.errors = [];
-      state.status = 'idle';
-      state.error = null;
+      // Reset the entire slice to its initial state.
+      // This ensures the dialog is clean every time it's opened.
+      Object.assign(state, initialState);
     },
     
     setActiveTab: (state, action: PayloadAction<ExportState['activeTab']>) => {

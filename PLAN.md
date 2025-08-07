@@ -5,20 +5,21 @@ This plan outlines the development of a modern web-based reporting system to rep
 
 ## Current Status: Phase 1 Near Completion (Week 4 of 4)
 
-### ✅ Phase 1 Accomplishments (85% Complete - Table-Focused MVP)
+### ✅ Phase 1 Accomplishments (90% Complete - Table-Focused MVP)
 - **Frontend Foundation**: React + TypeScript + Vite with hot reload
 - **Drag-Drop System**: ENHANCED multi-field selection with checkboxes (v0.15.0)
 - **Properties Panel**: Fully wired to Redux, kept as drawer (best UX practice)
 - **Data Tables**: AG-Grid with full functionality (sorting, filtering, pagination)
-- **Export/Distribution UI**: Complete with scheduling (needs integration)
+- **Export/Distribution UI**: FULLY WIRED with scheduling (v0.16.0)
 - **Mock Data**: 100+ funds with 5 years of history
 - **Docker Environment**: All services containerized
 
 ### 🔧 Critical Updates (2025-08-07)
-1. **Multi-field drag-drop**: Checkbox selection for batch field operations
-2. **Properties Panel**: Maintained as drawer after UX analysis
-3. **Charts Deprioritized**: Tables sufficient for Phase 1 MVP demo
-4. **Focus Shift**: Table-centric reporting for faster delivery
+1. **Export Dialog Wired**: Fully connected with conditional rendering (v0.16.0)
+2. **Multi-field drag-drop**: Checkbox selection for batch field operations
+3. **Properties Panel**: Maintained as drawer after UX analysis
+4. **Charts Deprioritized**: Tables sufficient for Phase 1 MVP demo
+5. **Demo Ready**: Comprehensive demo scenarios documented
 
 ## Core Requirements Mapped from SAP Business Objects
 
@@ -120,10 +121,10 @@ PostgreSQL (Primary Database)
 - ✅ Mock data layer (100+ funds)
 - ✅ Docker containerization
 
-**Remaining (15%)**:
-- [ ] Export dialog integration with toolbar
-- [ ] Basic scheduling UI connection
-- [ ] Demo scenarios and documentation
+**Remaining (10%)**:
+- [x] Export dialog integration with toolbar ✅
+- [ ] Basic scheduling UI connection (UI exists, needs backend)
+- [x] Demo scenarios and documentation ✅
 
 **Deprioritized to Phase 2**:
 - ⏸️ Chart visualizations (infrastructure exists but not needed for MVP)

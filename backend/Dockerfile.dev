@@ -1,0 +1,8 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Create a minimal package.json if it doesn't exist
+RUN echo '{"name":"boe-backend","version":"1.0.0","scripts":{"start":"echo Backend placeholder"}}' > package.json
+
+CMD ["npm", "start"]
