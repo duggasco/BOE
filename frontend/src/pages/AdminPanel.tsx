@@ -1,8 +1,10 @@
 import React from 'react';
 import { Card, Tabs, Empty } from 'antd';
-import { SettingOutlined, UserOutlined, DatabaseOutlined } from '@ant-design/icons';
+import { SettingOutlined, UserOutlined, DatabaseOutlined, DashboardOutlined } from '@ant-design/icons';
 import FieldManagement from '../components/Admin/FieldManagement';
 import UserManagement from '../components/Admin/UserManagement';
+import SystemSettings from '../components/Admin/SystemSettings';
+import Monitoring from '../components/Admin/Monitoring';
 
 const AdminPanel: React.FC = () => {
   const EmptyState = ({ title }: { title: string }) => (
@@ -49,7 +51,17 @@ const AdminPanel: React.FC = () => {
           System Settings
         </span>
       ),
-      children: <EmptyState title="System settings" />
+      children: <SystemSettings />
+    },
+    { 
+      key: 'monitoring', 
+      label: (
+        <span>
+          <DashboardOutlined style={{ marginRight: 8 }} />
+          Monitoring
+        </span>
+      ),
+      children: <Monitoring />
     },
   ];
 
