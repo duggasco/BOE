@@ -56,7 +56,7 @@ const ReportBuilder: React.FC = () => {
   const queryLoading = useSelector((state: RootState) => state.query.loading);
   
   useEffect(() => {
-    if (id) {
+    if (id && id !== 'new') {
       // Load existing report
       const savedReports = JSON.parse(localStorage.getItem('savedReports') || '[]');
       const report = savedReports.find((r: any) => r.id === id);
@@ -67,7 +67,7 @@ const ReportBuilder: React.FC = () => {
         navigate('/reports');
       }
     } else {
-      // Create new report
+      // Create new report for both 'new' and undefined
       dispatch(initializeReport({ name: 'New Report' }));
     }
   }, [id, dispatch, navigate]);
@@ -223,9 +223,12 @@ const ReportBuilder: React.FC = () => {
   };
   
   const handleExport = () => {
+    // Allow export even for unsaved reports
+    const reportId = currentReport?.id || `temp-${Date.now()}`;
+    const reportName = currentReport?.name || 'Unsaved Report';
+    
     if (!currentReport) {
-      message.warning('No report to export');
-      return;
+      message.info('Exporting unsaved report. Consider saving it first.');
     }
     
     // Set up mock prompts for demo (in real app, these would come from report definition)
@@ -252,8 +255,8 @@ const ReportBuilder: React.FC = () => {
     
     dispatch(setAvailablePrompts(mockPrompts));
     dispatch(openExportDialog({
-      reportId: currentReport.id,
-      reportName: currentReport.name,
+      reportId: reportId,
+      reportName: reportName,
     }));
   };
   
