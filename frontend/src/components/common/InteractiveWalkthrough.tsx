@@ -186,7 +186,22 @@ export const InteractiveWalkthrough: React.FC = () => {
                 dispatch({ type: 'GO_TO_STEP', stepIndex });
                 // Clear session storage
                 sessionStorage.removeItem(TOUR_SESSION_KEY);
+              } else {
+                // Element not found yet, try again after a delay
+                setTimeout(async () => {
+                  const retryElement = await waitForElement(currentStep.target, 3000);
+                  if (retryElement) {
+                    dispatch({ type: 'START_TOUR', scenario });
+                    dispatch({ type: 'GO_TO_STEP', stepIndex });
+                    sessionStorage.removeItem(TOUR_SESSION_KEY);
+                  }
+                }, 500);
               }
+            } else {
+              // No target or body target, just resume
+              dispatch({ type: 'START_TOUR', scenario });
+              dispatch({ type: 'GO_TO_STEP', stepIndex });
+              sessionStorage.removeItem(TOUR_SESSION_KEY);
             }
           }
         } catch (error) {
@@ -256,20 +271,20 @@ export const InteractiveWalkthrough: React.FC = () => {
         
         // Navigate to the new route
         navigate(nextStep.route);
-      } else if (nextStep) {
-        // If the next step is on the same page, wait for its element if needed
-        if (nextStep.target && nextStep.target !== 'body') {
-          const element = await waitForElement(nextStep.target, 2000);
-          if (!element) {
-            console.warn(`Target element not found: ${nextStep.target}`);
-          }
-        }
+      } else if (walkthroughState.run) {
+        // For same-page transitions, manually pause, wait, and advance
+        // This gives components like AntD's Sider time to animate/settle
+        dispatch({ type: 'PAUSE_TOUR' });
+        setTimeout(() => {
+          dispatch({ type: 'GO_TO_STEP', stepIndex: nextStepIndex });
+          dispatch({ type: 'RESUME_TOUR' });
+        }, 150); // Small delay to let DOM settle
       }
     } else if (action === ACTIONS.CLOSE) {
       sessionStorage.removeItem(TOUR_SESSION_KEY);
       dispatch({ type: 'STOP_TOUR' });
     }
-  }, [walkthroughState.scenario, navigate, location.pathname]);
+  }, [walkthroughState.scenario, walkthroughState.run, navigate, location.pathname]);
 
   // Convert scenario steps to Joyride format
   const joyrideSteps = walkthroughState.scenario?.steps.map((step, index) => ({

@@ -2,7 +2,46 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
-## [0.26.0] - 2025-08-07 (Latest)
+## [0.26.2] - 2025-08-07 (Latest)
+
+### Fixed - Tutorial Step Transition Issue
+
+#### Successfully Resolved Tutorial Navigation
+Fixed issue where tutorial disappeared when transitioning between steps on the same page:
+
+**Issue Identified:**
+- Tutorial successfully navigates from Step 1 (body) to Step 2 (after route change)
+- Tutorial was disappearing when clicking Next from Step 2 to Step 3
+- Element with `data-tour="field-selector"` exists and is visible in DOM
+- Issue was with Joyride needing time for DOM to settle after Ant Design components animate
+
+**Solution Implemented (with Gemini AI collaboration):**
+- Added 150ms delay for same-page transitions to allow DOM/animations to settle
+- Manually pause tour, wait, then advance step and resume
+- Keeps tour state intact during the transition
+
+**Code Change:**
+```tsx
+} else if (walkthroughState.run) {
+  // For same-page transitions, manually pause, wait, and advance
+  dispatch({ type: 'PAUSE_TOUR' });
+  setTimeout(() => {
+    dispatch({ type: 'GO_TO_STEP', stepIndex: nextStepIndex });
+    dispatch({ type: 'RESUME_TOUR' });
+  }, 150); // Small delay to let DOM settle
+}
+```
+
+**Testing Results (via Playwright MCP):**
+- All 9 steps of Quick Feature Tour now work correctly
+- Smooth transitions between all steps
+- No more disappearing tutorial dialogs
+- Tutorial maintains proper state throughout
+
+**Files Modified:**
+- `frontend/src/components/common/InteractiveWalkthrough.tsx` - Added delay for DOM settling
+
+## [0.26.0] - 2025-08-07
 
 ### Fixed - Interactive Tutorial Navigation
 
