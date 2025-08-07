@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { App as AntApp } from 'antd';
 import { store } from './store';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ViewportProvider } from './contexts/ViewportContext';
 import MainLayout from './components/Layout/MainLayout';
 import ReportBuilder from './pages/ReportBuilder';
 import ReportList from './pages/ReportList';
@@ -26,28 +27,30 @@ function App() {
     return (
       <Provider store={store}>
         <ThemeProvider>
-          <AntApp>
-            <Router>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <MainLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<Navigate to="/reports" />} />
-                  <Route path="reports" element={<ReportList />} />
-                  <Route path="reports/new" element={<ReportBuilder />} />
-                  <Route path="reports/:id/edit" element={<ReportBuilder />} />
-                  <Route path="schedules" element={<ScheduleManager />} />
-                  <Route path="admin" element={<AdminPanel />} />
-                </Route>
-              </Routes>
-            </Router>
-          </AntApp>
+          <ViewportProvider>
+            <AntApp>
+              <Router>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route
+                    path="/"
+                    element={
+                      <ProtectedRoute>
+                        <MainLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<Navigate to="/reports" />} />
+                    <Route path="reports" element={<ReportList />} />
+                    <Route path="reports/new" element={<ReportBuilder />} />
+                    <Route path="reports/:id/edit" element={<ReportBuilder />} />
+                    <Route path="schedules" element={<ScheduleManager />} />
+                    <Route path="admin" element={<AdminPanel />} />
+                  </Route>
+                </Routes>
+              </Router>
+            </AntApp>
+          </ViewportProvider>
         </ThemeProvider>
       </Provider>
     );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button, Input, Avatar, Badge, Space } from 'antd';
+import { Layout, Menu, Button, Input, Avatar, Badge, Space, Dropdown } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   FileTextOutlined,
@@ -12,32 +12,26 @@ import {
   SearchOutlined,
   BellOutlined,
   UserOutlined,
+  LogoutOutlined,
+  ProfileOutlined,
 } from '@ant-design/icons';
 import ThemeToggle from '../ThemeToggle';
+import { useViewport } from '../../contexts/ViewportContext';
 
 const { Header, Sider, Content } = Layout;
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isMobile, isTablet } = useViewport();
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileView, setMobileView] = useState(window.innerWidth < 768);
 
-  // Handle window resize
+  // Auto-collapse sidebar on mobile
   React.useEffect(() => {
-    const handleResize = () => {
-      const isMobile = window.innerWidth < 768;
-      setMobileView(isMobile);
-      if (isMobile) {
-        setCollapsed(true);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initial check
-    
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    if (isMobile) {
+      setCollapsed(true);
+    }
+  }, [isMobile]);
 
   const menuItems = [
     {
@@ -64,36 +58,20 @@ const MainLayout: React.FC = () => {
         collapsed={collapsed}
         onCollapse={setCollapsed}
         breakpoint="lg"
-        collapsedWidth={mobileView ? 0 : 80}
-        width={mobileView ? 200 : 240}
+        collapsedWidth={isMobile ? 0 : 80}
+        width={isMobile ? 200 : 240}
         style={{
           overflow: 'auto',
           height: '100vh',
-          position: mobileView ? 'fixed' : 'fixed',
+          position: 'fixed',
           left: 0,
           top: 0,
           bottom: 0,
-          zIndex: mobileView ? 1000 : 1,
+          zIndex: isMobile ? 1000 : 1,
           backgroundColor: 'var(--sidebar-bg)',
           boxShadow: '2px 0 8px rgba(0,0,0,0.15)',
         }}
-        trigger={
-          mobileView ? (
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                position: 'fixed',
-                top: 16,
-                left: collapsed ? 16 : 216,
-                zIndex: 1001,
-                background: '#fff',
-                transition: 'left 0.2s',
-              }}
-            />
-          ) : null
-        }
+        trigger={null}
       >
         <div style={{ 
           height: 64, 
@@ -129,7 +107,7 @@ const MainLayout: React.FC = () => {
           }))}
           onClick={({ key }) => {
             navigate(key);
-            if (mobileView) {
+            if (isMobile) {
               setCollapsed(true);
             }
           }}
@@ -141,7 +119,7 @@ const MainLayout: React.FC = () => {
         />
       </Sider>
       <Layout style={{ 
-        marginLeft: mobileView && collapsed ? 0 : (mobileView ? 200 : (collapsed ? 80 : 240)),
+        marginLeft: isMobile && collapsed ? 0 : (isMobile ? 200 : (collapsed ? 80 : 240)),
         transition: 'margin-left 0.2s',
         backgroundColor: 'var(--color-bg-secondary)',
         minHeight: '100vh',
@@ -149,7 +127,7 @@ const MainLayout: React.FC = () => {
         <Header style={{ 
           padding: 0, 
           background: 'var(--color-bg-header)',
-          position: mobileView ? 'fixed' : 'sticky',
+          position: 'sticky',
           width: '100%',
           top: 0,
           zIndex: 999,
@@ -157,14 +135,20 @@ const MainLayout: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingLeft: mobileView ? 60 : 24,
-          paddingRight: 24,
+          paddingLeft: 16,
+          paddingRight: 16,
         }}>
-          {mobileView ? (
-            <h2 style={{ margin: 0 }}>BOE</h2>
-          ) : (
-            <>
-              <div style={{ flex: 1, maxWidth: 400 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {isMobile && (
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+                style={{ fontSize: 20 }}
+              />
+            )}
+            {!isTablet && !isMobile && (
+              <div style={{ width: 300 }}>
                 <Input
                   placeholder="Search..."
                   prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
@@ -176,32 +160,69 @@ const MainLayout: React.FC = () => {
                   size="large"
                 />
               </div>
-              <Space size={20}>
-                <ThemeToggle />
-                <Badge count={5} size="small">
-                  <Button
-                    type="text"
-                    icon={<BellOutlined style={{ fontSize: 20 }} />}
-                    style={{ fontSize: 20 }}
-                  />
-                </Badge>
-                <Avatar 
-                  size={36} 
-                  icon={<UserOutlined />}
-                  style={{ 
-                    backgroundColor: '#1890ff',
-                    cursor: 'pointer',
-                  }}
+            )}
+          </div>
+          
+          <Space size={isMobile ? 8 : 16}>
+            {(isTablet || isMobile) && (
+              <Button
+                type="text"
+                icon={<SearchOutlined />}
+                style={{ fontSize: 18 }}
+              />
+            )}
+            <ThemeToggle />
+            {!isMobile && (
+              <Badge count={5} size="small">
+                <Button
+                  type="text"
+                  icon={<BellOutlined style={{ fontSize: 20 }} />}
+                  style={{ fontSize: 20 }}
                 />
-              </Space>
-            </>
-          )}
+              </Badge>
+            )}
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    key: 'profile',
+                    icon: <ProfileOutlined />,
+                    label: 'Profile',
+                  },
+                  isMobile && {
+                    key: 'notifications',
+                    icon: <BellOutlined />,
+                    label: <Badge count={5} size="small">Notifications</Badge>,
+                  },
+                  {
+                    type: 'divider',
+                  },
+                  {
+                    key: 'logout',
+                    icon: <LogoutOutlined />,
+                    label: 'Logout',
+                  },
+                ].filter(Boolean),
+              }}
+              placement="bottomRight"
+            >
+              <Avatar 
+                size={isMobile ? 32 : 36} 
+                icon={<UserOutlined />}
+                style={{ 
+                  backgroundColor: '#1890ff',
+                  cursor: 'pointer',
+                }}
+              />
+            </Dropdown>
+          </Space>
         </Header>
         <Content style={{ 
           margin: 0,
-          padding: '24px 32px',
+          padding: isMobile ? '16px' : isTablet ? '20px' : '24px 32px',
           minHeight: 'calc(100vh - 64px)',
           background: 'transparent',
+          marginTop: 0,
         }}>
           <Outlet />
         </Content>

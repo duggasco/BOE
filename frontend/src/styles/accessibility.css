@@ -1,0 +1,372 @@
+/* WCAG 2.1 AA Accessibility Styles */
+
+/* 1. Focus Indicators - WCAG 2.4.7 */
+*:focus-visible {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(24, 144, 255, 0.2);
+}
+
+/* Skip to main content link - WCAG 2.4.1 */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 1em;
+  background-color: #000;
+  color: #fff;
+  text-decoration: none;
+}
+
+.skip-to-main:focus {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+/* Screen reader only content - WCAG 1.1.1 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 2. Color Contrast - WCAG 1.4.3 */
+/* Ensure minimum contrast ratio of 4.5:1 for normal text */
+/* and 3:1 for large text (18pt+ or 14pt+ bold) */
+
+/* 3. Keyboard Navigation - WCAG 2.1.1 */
+.keyboard-only:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 4. Interactive Elements - WCAG 2.5.5 */
+/* Minimum target size of 44x44 pixels */
+button,
+a,
+input[type="checkbox"],
+input[type="radio"],
+select {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Small buttons exception with adequate spacing */
+.small-target {
+  min-height: 24px;
+  min-width: 24px;
+  margin: 10px; /* Ensures 44px total with spacing */
+}
+
+/* 5. Form Labels - WCAG 1.3.1, 3.3.2 */
+label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.required::after {
+  content: " *";
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+/* 6. Error Messages - WCAG 3.3.1 */
+.error-message {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 4px;
+  role: alert;
+}
+
+.error-message::before {
+  content: "⚠ ";
+  font-weight: bold;
+}
+
+/* 7. High Contrast Mode Support - WCAG 1.4.11 */
+@media (prefers-contrast: high) {
+  * {
+    border-width: 2px !important;
+  }
+  
+  button,
+  input,
+  select,
+  textarea {
+    border: 2px solid currentColor !important;
+  }
+  
+  *:focus-visible {
+    outline-width: 3px !important;
+    outline-offset: 3px !important;
+  }
+}
+
+/* 8. Reduced Motion - WCAG 2.3.3 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 9. Text Spacing - WCAG 1.4.12 */
+@supports (line-height: 1.5) {
+  p,
+  li {
+    line-height: 1.5;
+    letter-spacing: 0.12em;
+    word-spacing: 0.16em;
+  }
+  
+  p + p {
+    margin-top: 2em;
+  }
+}
+
+/* 10. Orientation - WCAG 1.3.4 */
+/* Ensure content is not locked to landscape/portrait */
+@media screen and (orientation: portrait) {
+  .responsive-container {
+    flex-direction: column;
+  }
+}
+
+@media screen and (orientation: landscape) {
+  .responsive-container {
+    flex-direction: row;
+  }
+}
+
+/* 11. Reflow - WCAG 1.4.10 */
+/* Content should be readable at 400% zoom */
+@media (min-width: 320px) {
+  .reflow-container {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* 12. Status Messages - WCAG 4.1.3 */
+[role="status"],
+[role="alert"],
+[aria-live="polite"],
+[aria-live="assertive"] {
+  position: relative;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+/* 13. Loading Indicators - WCAG 4.1.3 */
+.loading-indicator {
+  position: relative;
+}
+
+.loading-indicator::after {
+  content: "Loading...";
+  position: absolute;
+  left: -9999px;
+}
+
+/* 14. Table Accessibility - WCAG 1.3.1 */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  text-align: left;
+  font-weight: bold;
+  background-color: var(--color-bg-secondary);
+}
+
+th[scope="col"] {
+  vertical-align: bottom;
+}
+
+th[scope="row"] {
+  vertical-align: top;
+}
+
+/* 15. Link Differentiation - WCAG 1.4.1 */
+a:not(.button) {
+  text-decoration: underline;
+  color: #1890ff;
+}
+
+a:not(.button):hover {
+  text-decoration: none;
+}
+
+a:not(.button):visited {
+  color: #722ed1;
+}
+
+/* 16. Icon Buttons - WCAG 1.1.1 */
+.icon-button {
+  position: relative;
+}
+
+.icon-button .tooltip {
+  position: absolute;
+  left: -9999px;
+}
+
+.icon-button:hover .tooltip,
+.icon-button:focus .tooltip {
+  left: auto;
+  top: 100%;
+  margin-top: 4px;
+  background: #000;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+/* 17. Disabled State - WCAG 1.4.3 */
+:disabled,
+[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 18. Print Styles - WCAG 1.4.8 */
+@media print {
+  * {
+    background: transparent !important;
+    color: #000 !important;
+  }
+  
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+  
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+  
+  abbr[title]::after {
+    content: " (" attr(title) ")";
+  }
+}
+
+/* 19. Custom Focus Styles for Specific Components */
+.ant-btn:focus-visible,
+.ant-input:focus-visible,
+.ant-select:focus-visible {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(24, 144, 255, 0.2);
+}
+
+.ant-menu-item:focus-visible {
+  background-color: rgba(24, 144, 255, 0.1);
+  outline: 2px solid #1890ff;
+  outline-offset: -2px;
+}
+
+/* 20. Accessible Modals and Dialogs */
+.ant-modal-wrap:focus-visible {
+  outline: none;
+}
+
+.ant-modal-content:focus-visible {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+/* 21. Form Field Focus States */
+.ant-form-item-has-error .ant-input:focus,
+.ant-form-item-has-error .ant-input-focused {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+/* 22. Dark Mode Accessibility */
+[data-theme="dark"] {
+  /* Ensure sufficient contrast in dark mode */
+  --min-contrast-ratio: 4.5;
+}
+
+[data-theme="dark"] *:focus-visible {
+  outline-color: #40a9ff;
+  box-shadow: 0 0 0 4px rgba(64, 169, 255, 0.3);
+}
+
+/* 23. Mobile Accessibility */
+@media (max-width: 768px) {
+  /* Larger touch targets on mobile */
+  button,
+  a,
+  input[type="checkbox"],
+  input[type="radio"],
+  select {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* Increase spacing between interactive elements */
+  .ant-space-item {
+    margin: 8px !important;
+  }
+}
+
+/* 24. Landmark Regions - WCAG 1.3.1 */
+main {
+  display: block;
+}
+
+nav {
+  display: block;
+}
+
+aside {
+  display: block;
+}
+
+/* 25. Live Regions for Screen Readers */
+.live-region-polite {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+[aria-live="polite"] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+[aria-live="assertive"] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

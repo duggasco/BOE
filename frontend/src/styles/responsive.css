@@ -1,0 +1,301 @@
+/* Responsive Design Improvements */
+
+/* Mobile First Approach */
+
+/* Base styles for mobile (< 768px) */
+@media (max-width: 767px) {
+  /* Tables - make them horizontally scrollable */
+  .ant-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .ant-table {
+    min-width: 600px;
+  }
+  
+  /* Tabs - make them scrollable */
+  .ant-tabs-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .ant-tabs-nav::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .ant-tabs-nav-wrap {
+    overflow: visible !important;
+  }
+  
+  /* Cards - reduce padding */
+  .ant-card-body {
+    padding: 16px !important;
+  }
+  
+  /* Forms - stack labels on top */
+  .ant-form-item-label {
+    text-align: left !important;
+  }
+  
+  .ant-form-horizontal .ant-form-item-label {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .ant-form-horizontal .ant-form-item-control {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Buttons - full width on mobile */
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  /* Admin Panel specific */
+  .field-management-split {
+    flex-direction: column !important;
+  }
+  
+  .field-hierarchy-panel {
+    width: 100% !important;
+    margin-bottom: 16px;
+    max-height: 200px;
+  }
+  
+  .field-table-panel {
+    width: 100% !important;
+  }
+  
+  /* Modal adjustments */
+  .ant-modal {
+    max-width: calc(100vw - 32px) !important;
+    margin: 16px !important;
+  }
+  
+  /* Select dropdowns - full width */
+  .ant-select {
+    width: 100% !important;
+  }
+  
+  /* Page headers */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+  
+  .page-header-actions {
+    width: 100%;
+  }
+  
+  /* Pagination - smaller size */
+  .ant-pagination {
+    font-size: 12px;
+  }
+  
+  .ant-pagination-item {
+    min-width: 28px;
+    height: 28px;
+    line-height: 26px;
+  }
+  
+  /* Space component - reduce gaps */
+  .ant-space-compact {
+    gap: 4px !important;
+  }
+}
+
+/* Tablet styles (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tables - adjust column widths */
+  .ant-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  /* Cards - moderate padding */
+  .ant-card-body {
+    padding: 20px !important;
+  }
+  
+  /* Forms - side by side with smaller labels */
+  .ant-form-horizontal .ant-form-item-label {
+    flex: 0 0 30% !important;
+    max-width: 30% !important;
+  }
+  
+  .ant-form-horizontal .ant-form-item-control {
+    flex: 1 1 70% !important;
+    max-width: 70% !important;
+  }
+  
+  /* Admin Panel */
+  .field-hierarchy-panel {
+    width: 35% !important;
+  }
+  
+  .field-table-panel {
+    width: 65% !important;
+  }
+}
+
+/* Desktop styles (>= 1024px) */
+@media (min-width: 1024px) {
+  /* Keep existing desktop styles */
+  .field-hierarchy-panel {
+    width: 30%;
+  }
+  
+  .field-table-panel {
+    width: 70%;
+  }
+}
+
+/* Utility classes for responsive design */
+.hide-mobile {
+  @media (max-width: 767px) {
+    display: none !important;
+  }
+}
+
+.hide-tablet {
+  @media (max-width: 1023px) {
+    display: none !important;
+  }
+}
+
+.show-mobile {
+  display: none !important;
+  @media (max-width: 767px) {
+    display: block !important;
+  }
+}
+
+.show-tablet {
+  display: none !important;
+  @media (max-width: 1023px) {
+    display: block !important;
+  }
+}
+
+/* Responsive text sizes */
+@media (max-width: 767px) {
+  h1 { font-size: 24px !important; }
+  h2 { font-size: 20px !important; }
+  h3 { font-size: 18px !important; }
+  h4 { font-size: 16px !important; }
+  
+  .ant-typography-title {
+    font-size: 20px !important;
+  }
+}
+
+/* Responsive spacing */
+@media (max-width: 767px) {
+  .ant-row {
+    margin-left: -8px !important;
+    margin-right: -8px !important;
+  }
+  
+  .ant-col {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
+/* Report Builder specific responsive styles */
+@media (max-width: 767px) {
+  .report-builder-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .report-builder-toolbar button {
+    flex: 1;
+    min-width: 80px;
+  }
+  
+  .field-selector-panel {
+    position: fixed;
+    top: 64px;
+    left: -100%;
+    width: 80%;
+    height: calc(100vh - 64px);
+    z-index: 998;
+    transition: left 0.3s;
+    background: var(--color-bg-primary);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  }
+  
+  .field-selector-panel.open {
+    left: 0;
+  }
+  
+  .report-canvas {
+    width: 100%;
+  }
+}
+
+/* Monitoring Dashboard responsive */
+@media (max-width: 767px) {
+  .monitoring-metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .monitoring-chart {
+    height: 200px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .monitoring-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* System Settings responsive */
+@media (max-width: 767px) {
+  .settings-form .ant-form-item {
+    margin-bottom: 12px !important;
+  }
+  
+  .color-picker-preview {
+    width: 100% !important;
+    margin-top: 8px;
+  }
+}
+
+/* Schedule Monitor responsive */
+@media (max-width: 767px) {
+  .schedule-timeline {
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  
+  .schedule-timeline::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .schedule-timeline::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .schedule-timeline::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+}
+
+/* Dark mode responsive adjustments */
+[data-theme="dark"] {
+  @media (max-width: 767px) {
+    .ant-table {
+      background: var(--color-bg-secondary);
+    }
+    
+    .ant-card {
+      background: var(--color-bg-secondary);
+    }
+  }
+}

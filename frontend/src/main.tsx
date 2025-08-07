@@ -4,6 +4,9 @@ import 'antd/dist/reset.css'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-quartz.css'
 import './index.css'
+import './styles/theme.css'
+import './styles/responsive.css'
+import './styles/accessibility.css'
 import App from './App.tsx'
 
 console.log('Main.tsx loaded');

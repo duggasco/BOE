@@ -1,6 +1,10 @@
 /* Theme CSS Variables */
 
 :root {
+  /* Breakpoints - Single source of truth */
+  --breakpoint-mobile: 768px;
+  --breakpoint-tablet: 1024px;
+  
   /* Light theme colors */
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f0f2f5;

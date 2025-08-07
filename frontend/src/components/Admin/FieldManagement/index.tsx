@@ -396,8 +396,8 @@ const FieldManagement: React.FC = () => {
           </Col>
         </Row>
 
-        <Row gutter={16}>
-          <Col span={6}>
+        <Row gutter={16} className="field-management-split">
+          <Col xs={24} sm={24} md={8} lg={6} className="field-hierarchy-panel">
             <Card size="small" title="Field Hierarchy">
               <Tree
                 treeData={fieldTreeData}
@@ -407,7 +407,7 @@ const FieldManagement: React.FC = () => {
               />
             </Card>
           </Col>
-          <Col span={18}>
+          <Col xs={24} sm={24} md={16} lg={18} className="field-table-panel">
             <Table
               columns={columns}
               dataSource={filteredFields}
@@ -417,7 +417,8 @@ const FieldManagement: React.FC = () => {
                 showSizeChanger: true,
                 showTotal: (total) => `Total ${total} fields`,
               }}
-              scroll={{ x: 1200 }}
+              scroll={{ x: 800 }}
+              size="middle"
             />
           </Col>
         </Row>
@@ -426,7 +427,7 @@ const FieldManagement: React.FC = () => {
       <Drawer
         title={selectedField ? 'Edit Field' : 'Add New Field'}
         placement="right"
-        width={600}
+        width={window.innerWidth < 768 ? '100%' : 600}
         onClose={handleDrawerClose}
         open={drawerVisible}
         footer={

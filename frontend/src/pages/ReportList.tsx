@@ -2,9 +2,11 @@ import React from 'react';
 import { Card, Table, Button, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useViewport } from '../contexts/ViewportContext';
 
 const ReportList: React.FC = () => {
   const navigate = useNavigate();
+  const { isMobile } = useViewport();
 
   // Mock data for now
   const reports = [
@@ -14,18 +16,33 @@ const ReportList: React.FC = () => {
 
   const columns = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Last Modified', dataIndex: 'lastModified', key: 'lastModified' },
-    { title: 'Owner', dataIndex: 'owner', key: 'owner' },
+    { 
+      title: 'Last Modified', 
+      dataIndex: 'lastModified', 
+      key: 'lastModified',
+      responsive: ['md'] as any,
+    },
+    { 
+      title: 'Owner', 
+      dataIndex: 'owner', 
+      key: 'owner',
+      responsive: ['lg'] as any,
+    },
     {
       title: 'Actions',
       key: 'actions',
       render: (record: any) => (
-        <Space>
+        <Space size={isMobile ? 'small' : 'middle'}>
           <Button 
             icon={<EditOutlined />} 
             onClick={() => navigate(`/reports/${record.id}/edit`)}
+            size={isMobile ? 'small' : 'middle'}
           />
-          <Button icon={<DeleteOutlined />} danger />
+          <Button 
+            icon={<DeleteOutlined />} 
+            danger 
+            size={isMobile ? 'small' : 'middle'}
+          />
         </Space>
       ),
     },
@@ -34,17 +51,25 @@ const ReportList: React.FC = () => {
   return (
     <Card 
       title={
-        <span style={{ fontSize: '20px', fontWeight: 600 }}>Reports</span>
-      }
-      extra={
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />}
-          onClick={() => navigate('/reports/new')}
-          size="large"
-        >
-          New Report
-        </Button>
+        <div className="page-header" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          flexWrap: isMobile ? 'wrap' : 'nowrap',
+          gap: '12px',
+          width: '100%'
+        }}>
+          <span style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 600 }}>Reports</span>
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/reports/new')}
+            size={isMobile ? 'middle' : 'large'}
+            className={isMobile ? 'mobile-full-width' : ''}
+          >
+            New Report
+          </Button>
+        </div>
       }
       style={{
         width: '100%',
