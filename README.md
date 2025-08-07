@@ -2,18 +2,19 @@
 
 A modern web-based reporting system to replace SAP Business Objects Enterprise (BOE), built with React, TypeScript, and Node.js.
 
-## 🚀 Current Status: Phase 2 Complete - Admin Portal & UI (v0.26.2)
+## 🚀 Current Status: Phase 2 Complete - Admin Portal & UI (v0.27.0)
 
 ### What's Working
 - ✅ **Drag-and-Drop Report Builder**: Multi-field selection with checkbox support
 - ✅ **Data Visualization**: AG-Grid tables with sorting, filtering, pagination
+- ✅ **Export Functionality**: Working export dialog with format options (CSV, Excel, PDF)
 - ✅ **Professional UI Design**: Responsive design with Light/Dark/System themes
 - ✅ **Interactive Tutorials**: React Joyride walkthroughs for all major features
 - ✅ **Admin Portal**: Complete field, user, and system configuration management
 - ✅ **Monitoring Dashboard**: Schedule monitoring and system metrics with charts
 - ✅ **Accessibility**: WCAG 2.1 AA compliant with keyboard navigation
 - ✅ **Mock Data Layer**: 100+ funds with 5 years of price history
-- ✅ **Docker Environment**: Full containerization for easy deployment
+- ✅ **Docker Environment**: Simplified single-container deployment
 
 ### Live Demo
 The frontend is accessible at `http://localhost:5173` after running `docker compose up`.
@@ -88,7 +89,6 @@ docker compose up
 
 3. **Access the application**
 - Frontend: http://localhost:5173
-- PgAdmin: http://localhost:5050 (admin@boe.local / admin)
 
 4. **Test the Report Builder**
 - Drag a field from the left panel

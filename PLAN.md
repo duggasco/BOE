@@ -10,16 +10,16 @@ This plan outlines the development of a modern web-based reporting system to rep
 - **Drag-Drop System**: ENHANCED multi-field selection with checkboxes (v0.15.0)
 - **Properties Panel**: Fully wired to Redux, kept as drawer (best UX practice)
 - **Data Tables**: AG-Grid with full functionality (sorting, filtering, pagination)
-- **Export/Distribution UI**: FULLY WIRED with scheduling (v0.16.0)
+- **Export Dialog**: FIXED and fully functional with Redux integration (v0.27.0)
 - **Mock Data**: 100+ funds with 5 years of history
-- **Docker Environment**: All services containerized
+- **Docker Environment**: Simplified to single frontend container (v0.27.0)
 
 ### 🔧 Critical Updates (2025-08-07)
-1. **Interactive Tutorial Fixed**: Navigation issue resolved, Next button working (v0.26.0)
-2. **Export Dialog Wired**: Fully connected with conditional rendering (v0.16.0)
-3. **Multi-field drag-drop**: Checkbox selection for batch field operations
-4. **Properties Panel**: Maintained as drawer after UX analysis
-5. **Charts Deprioritized**: Tables sufficient for Phase 1 MVP demo
+1. **Export Dialog Fixed**: Removed conflicting component, now opens correctly (v0.27.0)
+2. **Docker Simplified**: Removed unnecessary backend services, single container deployment
+3. **Interactive Tutorial Fixed**: Navigation issue resolved, Next button working (v0.26.0)
+4. **Multi-field drag-drop**: Checkbox selection for batch field operations
+5. **Properties Panel**: Maintained as drawer after UX analysis
 6. **Demo Ready**: Comprehensive demo scenarios with working tutorials
 
 ## Core Requirements Mapped from SAP Business Objects

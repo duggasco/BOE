@@ -118,6 +118,13 @@
 
 ## 🟢 Resolved Issues
 
+### Issue #018: Export Dialog Not Opening
+- **Status**: Resolved (v0.27.0)
+- **Priority**: High
+- **Description**: Clicking Export button in Report Builder did nothing
+- **Resolution**: Removed conflicting ExportDialog.tsx file, import now resolves to Redux-integrated component
+- **Date**: 2025-08-07
+
 ### Issue #001: Properties Panel Not Connected
 - **Status**: Resolved (v0.13.0)
 - **Priority**: Medium
@@ -171,9 +178,9 @@
 
 ## 📊 Issue Statistics
 
-- **Total Issues**: 17
+- **Total Issues**: 18
 - **Open**: 12
-- **Resolved**: 5
+- **Resolved**: 6
 - **Critical**: 0
 - **High Priority**: 4
 - **Medium Priority**: 6
@@ -190,5 +197,5 @@ Before marking an issue as resolved, ensure:
 
 ---
 
-**Last Updated**: 2025-08-06  
-**Next Review**: End of Phase 1
+**Last Updated**: 2025-08-07  
+**Next Review**: End of Phase 2

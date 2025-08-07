@@ -1,8 +1,24 @@
 # Context Carryover for Next Session
 
-## Current Status: Phase 2 - 100% COMPLETE (2025-08-07, v0.26.2)
+## Current Status: Phase 2 - 100% COMPLETE (2025-08-07, v0.27.0)
 
-### Session Accomplishments
+### Recent Fixes (v0.27.0)
+
+#### 1. Export Dialog Functionality Fixed
+- **Issue**: Export button in Report Builder did nothing when clicked
+- **Root Cause**: Two conflicting ExportDialog components
+  - `ExportDialog.tsx` (old standalone component)
+  - `ExportDialog/index.tsx` (Redux-integrated component)
+- **Solution**: Removed the old ExportDialog.tsx file
+- **Result**: Export dialog now opens correctly with all features
+
+#### 2. Docker Setup Simplified
+- **Changed**: Removed unnecessary backend services from docker-compose.yml
+- **Removed**: backend, postgres, redis, pgadmin containers
+- **Result**: Single container deployment (just boe-frontend)
+- **Benefit**: Cleaner, simpler setup for frontend-only application
+
+### Previous Session Accomplishments
 
 #### 1. Interactive Walkthrough with React Joyride (v0.24.0, Fixed v0.26.0, Enhanced v0.26.2)
 - ✅ Implemented professional tour library (React Joyride)

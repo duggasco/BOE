@@ -2,7 +2,38 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
-## [0.26.2] - 2025-08-07 (Latest)
+## [0.27.0] - 2025-08-07 (Latest)
+
+### Fixed - Export Dialog Functionality
+
+#### Successfully Resolved Export Dialog Issue
+Fixed issue where clicking the Export button in Report Builder did nothing:
+
+**Issue Identified:**
+- Two conflicting ExportDialog components existed in the codebase
+- `ExportDialog.tsx` (old standalone component) was being imported instead of `ExportDialog/index.tsx` (Redux-integrated)
+- The old component wasn't connected to Redux store, so it couldn't respond to state changes
+
+**Solution Implemented:**
+- Removed the conflicting `ExportDialog.tsx` file
+- Import now correctly resolves to `ExportDialog/index.tsx`
+- Export dialog now properly opens with all features (format selection, destination, scheduling, prompts)
+
+### Improved - Docker Setup Simplified
+
+#### Streamlined Container Architecture
+Simplified Docker setup to run only the frontend application:
+
+**Changes Made:**
+- Removed unnecessary backend, postgres, redis, and pgadmin services from docker-compose.yml
+- Application now runs in a single container (boe-frontend)
+- Cleaner, simpler deployment with just the required frontend service
+
+**Files Modified:**
+- `docker-compose.yml` - Removed all services except frontend
+- `frontend/src/components/ReportBuilder/ExportDialog.tsx` - Deleted (conflicting file)
+
+## [0.26.2] - 2025-08-07
 
 ### Fixed - Tutorial Step Transition Issue
 

@@ -37,7 +37,7 @@
 - ✅ AG-Grid tables rendering with sorting, filtering, pagination
 - ✅ Properties panel fully wired to Redux with debouncing
 - ✅ Report save/load functionality via localStorage
-- ⚠️ Export dialog Redux state updates correctly but modal doesn't render (known issue for Phase 3 fix)
+- ✅ Export dialog fixed and working - opens with all features (v0.27.0)
 
 ## Phase 1: Frontend UI/UX with Mock Data 🎨
 
@@ -418,4 +418,4 @@
 - All backend development should support approved frontend features
 - Maintain clear separation between mock and real data layers
 
-Last Updated: 2025-08-07 (v0.26.0)
+Last Updated: 2025-08-07 (v0.27.0)
