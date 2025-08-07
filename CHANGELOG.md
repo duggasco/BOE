@@ -2,7 +2,34 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
-## [0.25.0] - 2025-08-07 (Latest)
+## [0.26.0] - 2025-08-07 (Latest)
+
+### Fixed - Interactive Tutorial Navigation
+
+#### Tutorial Walkthrough System Fix
+Successfully debugged and fixed the interactive tutorial system that was stuck on initial menu:
+
+**Issue Identified:**
+- Tutorial showed only "Skip Tutorial" and "Close" buttons with no "Next" option
+- Users couldn't advance beyond the first step
+- Multi-page navigation was broken due to Joyride configuration
+
+**Solution Implemented:**
+- Changed Joyride `continuous` prop from `false` to `true` to enable Next button
+- Added proper locale configuration for step-specific button labels
+- Ensured proper button state management for multi-step tours
+
+**Testing Results (via Playwright MCP):**
+- Tutorial now properly shows "Next (Step X of 9)" buttons
+- Successfully navigates between routes (/reports to /reports/new)
+- All 9 steps of Quick Feature Tour accessible
+- Previous/Next navigation working correctly
+- Progress indicator showing current step
+
+**Files Modified:**
+- `frontend/src/components/common/InteractiveWalkthrough.tsx` - Fixed Joyride configuration
+
+## [0.25.0] - 2025-08-07
 
 ### Added - Sample Reports & Error Boundary Testing
 

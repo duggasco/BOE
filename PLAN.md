@@ -15,11 +15,12 @@ This plan outlines the development of a modern web-based reporting system to rep
 - **Docker Environment**: All services containerized
 
 ### 🔧 Critical Updates (2025-08-07)
-1. **Export Dialog Wired**: Fully connected with conditional rendering (v0.16.0)
-2. **Multi-field drag-drop**: Checkbox selection for batch field operations
-3. **Properties Panel**: Maintained as drawer after UX analysis
-4. **Charts Deprioritized**: Tables sufficient for Phase 1 MVP demo
-5. **Demo Ready**: Comprehensive demo scenarios documented
+1. **Interactive Tutorial Fixed**: Navigation issue resolved, Next button working (v0.26.0)
+2. **Export Dialog Wired**: Fully connected with conditional rendering (v0.16.0)
+3. **Multi-field drag-drop**: Checkbox selection for batch field operations
+4. **Properties Panel**: Maintained as drawer after UX analysis
+5. **Charts Deprioritized**: Tables sufficient for Phase 1 MVP demo
+6. **Demo Ready**: Comprehensive demo scenarios with working tutorials
 
 ## Core Requirements Mapped from SAP Business Objects
 
