@@ -10,7 +10,13 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "start": "cd .. && ./start.sh",
+    "start:docker": "cd .. && ./start.sh --docker",
+    "start:native": "cd .. && ./start.sh --native",
+    "start:production": "cd .. && ./start.sh --production",
+    "stop": "cd .. && ./stop.sh",
+    "audit:security": "npm audit --audit-level=moderate"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",

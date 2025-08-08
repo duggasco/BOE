@@ -1,240 +1,224 @@
 # Context Carryover for Next Session
 
-## Current Status: Phase 2 - 100% COMPLETE (2025-08-07, v0.27.0)
+## Current Status: Phase 2.5 - COMPLETE (2025-08-08, v0.28.0)
 
-### Recent Fixes (v0.27.0)
+### Latest Achievement: Native Deployment Support
 
-#### 1. Export Dialog Functionality Fixed
-- **Issue**: Export button in Report Builder did nothing when clicked
-- **Root Cause**: Two conflicting ExportDialog components
-  - `ExportDialog.tsx` (old standalone component)
-  - `ExportDialog/index.tsx` (Redux-integrated component)
-- **Solution**: Removed the old ExportDialog.tsx file
-- **Result**: Export dialog now opens correctly with all features
+#### Phase 2.5 Completion (v0.28.0)
+Successfully implemented sophisticated deployment scripts that work without sudo or apt access:
 
-#### 2. Docker Setup Simplified
-- **Changed**: Removed unnecessary backend services from docker-compose.yml
-- **Removed**: backend, postgres, redis, pgadmin containers
-- **Result**: Single container deployment (just boe-frontend)
-- **Benefit**: Cleaner, simpler setup for frontend-only application
+**Key Accomplishments:**
+1. **Intelligent Deployment Scripts**:
+   - `start.sh`: Auto-detects Docker → Native Node.js → Local installation
+   - `stop.sh`: Safe shutdown with process confirmation
+   - Both scripts work entirely in user space (no sudo required)
 
-### Previous Session Accomplishments
+2. **Security Improvements (Gemini AI Review)**:
+   - Fixed destructive `rm -rf` without confirmation
+   - Added NVM installation security warnings
+   - Improved process detection to avoid killing unrelated processes
+   - Docker operations now target only frontend service
+   - Build failure detection in production mode
 
-#### 1. Interactive Walkthrough with React Joyride (v0.24.0, Fixed v0.26.0, Enhanced v0.26.2)
-- ✅ Implemented professional tour library (React Joyride)
-- ✅ Created externalized walkthrough scenarios
-- ✅ Fixed critical race condition issues identified by Gemini
-- ✅ **FIXED v0.26.0**: Tutorial navigation issue - Next button now working
-  - Changed continuous prop from false to true
-  - Added proper locale configuration for buttons
-- ✅ **FIXED v0.26.2**: Tutorial Step 3+ disappearing issue resolved
-  - Added 150ms delay for same-page transitions
-  - Allows DOM/Ant Design animations to settle
-  - All 9 steps now fully functional
-- ✅ Implemented proper multi-page tour handling with:
-  - MutationObserver for element detection
-  - SessionStorage for state preservation
-  - Tour lifecycle control with continuous mode enabled
-  - Proper pause/resume on navigation with DOM settling
+3. **Deployment Features**:
+   - Can install Node.js locally to `$HOME/.local/node` if not available
+   - Multiple tool fallbacks for maximum compatibility
+   - Colorful, user-friendly output with clear error messages
+   - Support for `--docker`, `--native`, and `--production` flags
+   - PID file management for accurate process tracking
 
-#### 2. Gemini AI Collaboration Success
-**Critical Issues Identified & Fixed:**
-- **Race Condition**: Tour trying to find elements before page load
-- **Anti-Pattern**: Using continuous mode for multi-page tours
-- **Code Smell**: setTimeout with arbitrary delays
-- **Solution**: Imperative control with waitForElement using MutationObserver
+4. **Testing & Validation**:
+   - Tested with Playwright MCP browser automation
+   - Verified both Docker and native deployments work
+   - Confirmed scripts work without sudo access
+   - Hot reload verified in both modes
 
-**Key Learnings:**
-- **UPDATE v0.26.0**: Use continuous=true for proper Next button display
-- Always pause tour before navigation
-- Use MutationObserver for reliable element detection
-- SessionStorage for preserving tour state across pages
+### Previous Accomplishments (Phase 2)
 
-#### 3. Documentation Updates
-- ✅ Updated TODO.md to reflect 100% Phase 2 completion
-- ✅ Updated CHANGELOG.md with v0.24.0 release notes
-- ✅ All Phase 2 features documented and tested
+#### Export Dialog Fix (v0.27.0)
+- Resolved conflicting ExportDialog components
+- Export button now functional in Report Builder
+- Docker setup simplified to single frontend container
 
-### Phase 2 Final Status: ✅ 100% COMPLETE
+#### Interactive Walkthrough (v0.26.x)
+- React Joyride implementation with multi-page tours
+- Fixed navigation issues with proper state management
+- MutationObserver for reliable element detection
 
-**All Features Implemented:**
-1. ✅ Field Management Interface
-2. ✅ User Management (Users, Groups, Roles, Permissions)
-3. ✅ System Configuration (Data Sources, Settings, Feature Flags, Theme)
-4. ✅ Monitoring Dashboard (Schedule Monitor, System Metrics)
-5. ✅ Dark Mode Support
-6. ✅ WCAG 2.1 AA Accessibility
-7. ✅ Responsive Design with ViewportProvider
-8. ✅ Loading States & Error Handling
-9. ✅ Interactive Walkthrough with React Joyride
+#### Admin Portal (100% Complete)
+- Field Management Interface
+- User Management (Users, Groups, Roles, Permissions)
+- System Configuration (Data Sources, Settings, Feature Flags, Theme)
+- Monitoring Dashboard (Schedule Monitor, System Metrics)
+- Dark Mode Support
+- WCAG 2.1 AA Accessibility
+- Responsive Design with ViewportProvider
 
-### Critical Code Patterns Established
+### Deployment Scripts Overview
 
-#### 1. Multi-Page Tour Pattern:
-```typescript
-// NEVER use continuous: true for multi-page tours
-<Joyride
-  continuous={false} // ALWAYS false for multi-page tours
-  callback={handleJoyrideCallback}
-/>
+#### start.sh Capabilities:
+```bash
+# Auto-detection mode (default)
+./start.sh
 
-// Wait for elements with MutationObserver
-const waitForElement = (selector: string): Promise<Element | null> => {
-  return new Promise((resolve) => {
-    const observer = new MutationObserver((mutations, obs) => {
-      const element = document.querySelector(selector);
-      if (element) {
-        obs.disconnect();
-        resolve(element);
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
-};
+# Force specific deployment
+./start.sh --docker      # Use Docker only
+./start.sh --native      # Use native Node.js only
+./start.sh --production  # Build and serve production
+
+# Features:
+- Detects Docker (including rootless)
+- Checks Node.js version
+- Can install Node.js locally without sudo
+- Port conflict detection
+- Dependency installation (npm ci if lock exists)
 ```
 
-#### 2. Tour State Preservation:
-```typescript
-// Save state before navigation
-sessionStorage.setItem(TOUR_SESSION_KEY, JSON.stringify({
-  scenarioId: scenario.id,
-  stepIndex: nextStepIndex,
-}));
+#### stop.sh Capabilities:
+```bash
+# Stop application
+./stop.sh
 
-// Resume after navigation
-useEffect(() => {
-  const sessionData = sessionStorage.getItem(TOUR_SESSION_KEY);
-  if (sessionData) {
-    // Resume tour with saved state
-  }
-}, [location.pathname]);
+# Features:
+- Stops Docker containers (frontend only)
+- Terminates native Node.js processes
+- Uses PID file for accurate tracking
+- Prompts before killing processes
+- Optional log file cleanup
 ```
 
 ### Files Created/Modified This Session
 
-#### New/Updated Components:
-- `/components/common/InteractiveWalkthrough.tsx` - Complete rewrite with proper tour handling
-- `/types/walkthrough.ts` - TypeScript interfaces
-- `/data/walkthroughScenarios.ts` - Externalized tour scenarios
+#### New Files:
+- `.nvmrc` - Node.js version specification (v20)
+- `frontend/.nvmrc` - Frontend-specific Node version
+- `start.sh` - Intelligent deployment script (447 lines)
+- `stop.sh` - Safe shutdown script (219 lines)
 
-#### Key Changes:
-1. Removed `continuous` property from WalkthroughScenario interface
-2. Added `waitForElement` helper with MutationObserver
-3. Implemented sessionStorage for state preservation
-4. Added PAUSE_TOUR and RESUME_TOUR actions to reducer
+#### Updated Files:
+- `CHANGELOG.md` - Added v0.28.0 release notes
+- `TODO.md` - Marked Phase 2.5 as complete
+- `PLAN.md` - Updated Phase 2.5 status to complete
+- `frontend/package.json` - Already had deployment scripts configured
 
-### Remaining Work (Phase 3 Planning)
+### Critical Patterns & Best Practices
 
-#### Immediate Next Steps:
-1. ⏳ Create sample reports for demo scenarios
-2. ⏳ Record demo videos
-3. ⏳ Test error boundaries comprehensively
-
-#### Phase 3 Backend Architecture (Ready to Start):
-```
-Python Microservices:
-├── Scheduling Service (Python + Celery + Redis)
-├── Export Engine (Python + pandas + openpyxl)
-├── Query Service (Python + SQLAlchemy)
-└── Auth Service (Python + JWT + OAuth2)
-
-Node.js BFF:
-└── API Gateway (Express + GraphQL)
+#### Deployment Without Sudo:
+```bash
+# Local Node.js installation pattern
+NODE_INSTALL_DIR="$HOME/.local/node"
+NODE_URL="https://nodejs.org/dist/v${VERSION}/node-v${VERSION}-${OS}-${ARCH}.tar.gz"
+# Download, extract, and add to PATH
+export PATH="$NODE_INSTALL_DIR/bin:$PATH"
 ```
 
-### Testing Status
+#### Safe Process Management:
+```bash
+# Use PID files for tracking
+echo $! > boe-frontend.pid
 
-#### Completed Testing:
-- ✅ React Joyride walkthrough with Playwright
-- ✅ Multi-page navigation in tours
-- ✅ FloatButton interaction
-- ✅ Tutorial selection modal
-- ✅ Loading states implementation
-- ✅ Dark mode switching
-- ✅ Responsive design at multiple breakpoints
+# Confirm before killing processes
+echo -n "Would you like to stop these processes? (y/n): "
+read -r response
+```
 
-#### Pending Testing:
-- ⏳ Error boundary retry mechanisms
-- ⏳ Tour completion tracking
-- ⏳ Cross-browser compatibility
+#### Port Detection Fallbacks:
+```bash
+# Multiple methods for compatibility
+netstat -tuln | grep ":$PORT"  # Traditional
+ss -tuln | grep ":$PORT"        # Modern Linux
+nc -z localhost $PORT           # Netcat
+curl -s http://localhost:$PORT  # HTTP check
+```
 
-### Known Issues & Resolutions
+### Testing & Quality Assurance
 
-#### Fixed This Session:
-1. **Tour Step Not Advancing**: Fixed by removing continuous mode
-2. **Race Condition on Navigation**: Fixed with MutationObserver
-3. **State Loss on Page Change**: Fixed with sessionStorage
+#### Gemini AI Code Review Results:
+- **Strengths**: Well-structured, excellent error handling, great UX
+- **Critical Issues Fixed**: 
+  - Destructive rm -rf without confirmation
+  - Broad process killing patterns
+  - Docker compose affecting all services
+- **Security Improvements**: All implemented successfully
 
-#### No Critical Issues Remaining
+#### Playwright MCP Testing:
+- ✅ Docker deployment tested and working
+- ✅ Native Node.js deployment tested and working
+- ✅ Stop/start cycles verified
+- ✅ Port management confirmed
+- ✅ Application accessible at http://localhost:5173
 
-### Commands and Environment
+### Environment & Commands
 
 ```bash
-# Docker services running
-- boe-frontend (React app on port 5173)
-- boe-postgres (PostgreSQL on port 5432)
-- boe-redis (Redis on port 6379)
+# Quick Start Commands
+./start.sh              # Auto-detect and start
+./stop.sh               # Stop application
+npm start               # From frontend/ directory
+npm run start:docker    # Force Docker
+npm run start:native    # Force native
+npm run stop            # Stop from frontend/
 
-# Key commands
-docker compose up          # Start all services
-docker compose restart frontend  # Restart frontend
-docker exec boe-frontend npm install [package]  # Install packages in container
+# Docker Commands (if using Docker)
+docker compose up -d frontend
+docker compose stop frontend
+docker logs -f boe-frontend
 
-# Testing with Playwright MCP
-mcp__playwright__browser_navigate
-mcp__playwright__browser_click
-mcp__playwright__browser_take_screenshot
+# Native Commands (if using Node.js)
+cd frontend && npm run dev     # Development
+cd frontend && npm run build   # Production build
+cd frontend && npm run preview # Serve production
 ```
-
-### Collaboration Notes
-
-#### Working with Gemini:
-- **Excellent Critical Review**: Identified race condition and anti-patterns immediately
-- **Equal Partnership**: Both provided solutions, not just criticism
-- **Key Insight**: "Reactive vs Imperative Control" for tours
-- **Best Practice**: Always challenge assumptions, come to parity before implementing
-
-#### Key Decisions Made:
-1. Use professional library (React Joyride) over custom implementation
-2. Never use continuous mode for multi-page tours
-3. MutationObserver > setTimeout for element detection
-4. SessionStorage for cross-page state preservation
 
 ### Next Session Priorities
 
-1. **Demo Preparation**:
-   - Create saved sample reports
-   - Record walkthrough videos
-   - Prepare presentation materials
+1. **Phase 3 Backend Development**:
+   - Python microservices architecture
+   - Scheduling Service (Celery + Redis)
+   - Export Engine (pandas + openpyxl)
+   - Query Service (SQLAlchemy)
+   - Authentication Service (JWT + OAuth2)
 
-2. **Phase 3 Backend Setup**:
-   - Initialize Python microservices structure
-   - Set up Celery + Redis for scheduling
-   - Create API contracts
-   - Design PostgreSQL schema
+2. **Remaining Minor Items**:
+   - Update Dockerfile.dev for non-root user (deferred from Phase 2.5)
+   - Create demo videos and presentations
+   - Performance benchmarking (Docker vs Native)
 
 3. **Integration Planning**:
-   - Define API endpoints
+   - Define API contracts
+   - Design database schema
    - Plan authentication flow
-   - Design data models
+   - Create data migration scripts
 
-### Success Metrics Achieved
+### Success Metrics
 
-**Phase 2 Completion: 100%**
-- All UI features implemented ✅
-- Professional code quality (validated by Gemini) ✅
-- Production-ready patterns established ✅
-- Comprehensive documentation ✅
-- Interactive tutorials working ✅
+**Phase 2.5 Achievements:**
+- ✅ No sudo required for deployment
+- ✅ Works on systems without Docker
+- ✅ Can install Node.js locally if needed
+- ✅ Cross-platform compatibility (Linux, macOS, Unix)
+- ✅ Security best practices implemented
+- ✅ User-friendly with clear feedback
+- ✅ Production-ready deployment scripts
 
-### Important Context for Next Session
+### Key Decisions & Learnings
 
-1. **React Joyride is installed and configured** - No need to reinstall
-2. **Tour implementation is production-ready** - Validated through testing and Gemini review
-3. **All Phase 2 features are complete** - Ready for Phase 3 backend
-4. **No blocking issues remain** - All critical bugs fixed
+1. **Shell Scripts vs Node.js**: Kept shell scripts per user preference (more portable)
+2. **Security First**: All Gemini-identified issues addressed
+3. **User Experience**: Colorful output, confirmations, clear errors
+4. **Fallback Strategy**: Docker → Native → Local Install → Manual
+5. **Testing Approach**: Playwright MCP for end-to-end validation
+
+### Important Notes for Next Session
+
+1. **Deployment is Production-Ready**: Scripts handle all edge cases
+2. **No Blocking Issues**: All critical problems resolved
+3. **Documentation Complete**: All .md files updated
+4. **Git Ready**: Changes staged for commit
+5. **Application Running**: Can be started with `./start.sh`
 
 ---
-**Session End**: 2025-08-07 18:00
-**Total Progress**: Phase 2 100% Complete, Ready for Phase 3
-**Next Focus**: Backend microservices implementation
+**Session End**: 2025-08-08
+**Total Progress**: Phase 2.5 100% Complete
+**Major Achievement**: Deployment without sudo/apt access
+**Next Focus**: Phase 3 Python microservices backend

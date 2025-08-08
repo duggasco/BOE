@@ -59,6 +59,15 @@ This plan outlines the development of a modern web-based reporting system to rep
 
 ## Technical Architecture
 
+### Deployment Strategy (NEW - v0.28.0)
+```
+Hybrid Deployment Approach
+├── Primary: Native installation (if Node.js available)
+├── Fallback: Docker container (if Docker available)
+├── Auto-detection: Script checks environment and uses best option
+└── Benefits: Maximum flexibility and compatibility
+```
+
 ### Frontend Stack (IMPLEMENTED)
 ```
 React 18+ with TypeScript ✅
@@ -69,6 +78,15 @@ React 18+ with TypeScript ✅
 ├── Charts: Recharts ✅
 ├── Data Grid: AG-Grid ✅
 └── Export: UI complete (backend needed)
+```
+
+### Native Installation Requirements
+```
+Node.js 20+ LTS
+├── npm or yarn package manager
+├── 2GB RAM minimum
+├── 1GB disk space
+└── Modern browser (Chrome, Firefox, Edge, Safari)
 ```
 
 ### Backend Stack (PLANNED - Phase 3)
@@ -255,10 +273,51 @@ PostgreSQL (Primary Database)
 - ⏸️ Zero data discrepancies (needs real data)
 - ✅ Intuitive UI (Properties Panel, drag-drop fixed)
 
+## Phase 2.5: Native Deployment Support ✅ COMPLETE (Week 6)
+**Goal**: Add native installation capability alongside Docker (no sudo required)
+
+**Implemented Features (v0.28.0 - 2025-08-08)**:
+- ✅ Intelligent deployment detection (Docker → Native Node.js)
+- ✅ Integrated start.sh that auto-installs dependencies if needed
+- ✅ No sudo requirements - all user-space installation
+- ✅ Automatic fallback with local Node.js installation capability
+- ✅ Development mode with hot reload (verified)
+- ✅ Production build optimization support
+- ✅ Cross-platform compatibility (Linux, macOS, Unix-like systems)
+
+**Implementation Decisions**:
+1. **Shell scripts retained** (user preference over Node.js scripts):
+   - `start.sh` - Sophisticated detection and fallback logic
+   - `stop.sh` - Safe process management with confirmations
+   - Portable shell scripting with multiple tool fallbacks
+   - Colorful, user-friendly output
+2. **Explicit deployment options** in package.json:
+   - ✅ `npm start` - Intelligent fallback (tries Docker first)
+   - ✅ `npm run start:docker` - Force Docker deployment
+   - ✅ `npm run start:native` - Force native deployment
+   - ✅ `npm run start:production` - Production build and serve
+   - ✅ `npm run stop` - Stop application safely
+3. **Dependency management**:
+   - ✅ Uses `npm ci` when package-lock.json exists
+   - ✅ Local node_modules (no global installs)
+   - ✅ `.nvmrc` files for Node version management
+4. **Security improvements** (based on Gemini AI review):
+   - ✅ Confirmation prompts before destructive operations
+   - ✅ NVM installation security warnings
+   - ✅ Process-specific termination (no broad patterns)
+   - ✅ Docker operations target only frontend service
+   - ✅ Build failure detection in production mode
+5. **Portability features**:
+   - ✅ Multiple tool fallbacks (netstat/ss/nc/curl for port checking)
+   - ✅ Architecture detection (x86_64, arm64)
+   - ✅ Local Node.js installation to `$HOME/.local/node`
+6. **Clear error messages** with actionable solutions
+
 ## Next Steps
 
 ### Immediate (This Week)
-1. Polish remaining Phase 1 items (5%)
+1. Implement native deployment support
+2. Polish remaining Phase 1 items (5%)
 2. Create comprehensive demo scenarios
 3. Prepare stakeholder presentation
 4. Document API contracts for Phase 3

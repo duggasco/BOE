@@ -2,6 +2,57 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
+## [0.28.0] - 2025-08-08
+
+### Added - Native Deployment Support (Phase 2.5)
+
+#### Intelligent Deployment System
+Implemented a sophisticated deployment system that works without sudo or apt access:
+
+**Key Features:**
+- **Automatic Detection**: Scripts intelligently detect available deployment methods (Docker → Native Node.js)
+- **No Sudo Required**: Everything runs in user space - no system-level permissions needed
+- **Local Node.js Installation**: Can download and install Node.js locally to `$HOME/.local/node` if not available
+- **Cross-Platform Support**: Works on Linux, macOS, and Unix-like systems
+- **User-Friendly**: Colorful output, clear error messages, and helpful prompts
+
+**Scripts Created:**
+1. **start.sh**: Intelligent startup script with multiple deployment options
+   - Auto-detects Docker availability (including rootless Docker)
+   - Falls back to native Node.js if Docker unavailable
+   - Can install Node.js locally without sudo if needed
+   - Supports `--docker`, `--native`, and `--production` flags
+   - Provides clear feedback and actionable error messages
+
+2. **stop.sh**: Safe shutdown script
+   - Stops Docker containers or native Node.js processes
+   - Uses PID files and port detection for accurate process management
+   - Prompts before killing processes to prevent accidental shutdowns
+   - Optional log file cleanup
+
+**Security Improvements (Based on Gemini AI Review):**
+- Added confirmation prompts before replacing existing Node.js installations
+- Warning about NVM installation security considerations
+- Improved process detection to avoid killing unrelated processes
+- Docker operations now target only the frontend service
+- Better error handling for build failures in production mode
+
+**Configuration Files:**
+- Added `.nvmrc` files specifying Node.js version 20
+- Updated `package.json` with deployment scripts:
+  - `npm start`: Intelligent auto-detection
+  - `npm run start:docker`: Force Docker deployment
+  - `npm run start:native`: Force native deployment
+  - `npm run start:production`: Production build and serve
+  - `npm run stop`: Stop the application
+  - `npm run audit:security`: Security audit
+
+**Testing:**
+- Successfully tested with Playwright MCP
+- Verified both Docker and native Node.js deployments work correctly
+- Confirmed scripts work without sudo access
+- Tested stop/start cycles and port management
+
 ## [0.27.0] - 2025-08-07 (Latest)
 
 ### Fixed - Export Dialog Functionality

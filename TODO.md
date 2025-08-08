@@ -39,6 +39,54 @@
 - ✅ Report save/load functionality via localStorage
 - ✅ Export dialog fixed and working - opens with all features (v0.27.0)
 
+## Phase 2.5: Native Deployment Support 🚀 (COMPLETED - 2025-08-08)
+
+### Deployment Infrastructure ✅ COMPLETE
+- [x] Created shell scripts (kept .sh format per user preference):
+  - [x] `start.sh` with:
+    - [x] Docker availability detection
+    - [x] Docker permissions check (docker ps test)
+    - [x] Node.js version detection
+    - [x] Use `npm ci` if package-lock.json exists
+    - [x] Port availability checking (netstat/ss/nc/curl fallbacks)
+    - [x] Clear, actionable error messages with colored output
+    - [x] Local Node.js installation without sudo
+  - [x] `stop.sh` with:
+    - [x] Safe process termination with user confirmation
+    - [x] Docker container cleanup (frontend only)
+    - [x] Port release verification
+    - [x] PID file management
+- [x] Add `.nvmrc` file with Node 20 specification
+- [x] Update package.json with explicit scripts:
+  - [x] `start` - Intelligent fallback (Docker → Native)
+  - [x] `start:docker` - Force Docker deployment
+  - [x] `start:native` - Force native deployment
+  - [x] `start:production` - Production build and serve
+  - [x] `stop` - Stop application
+  - [x] `audit:security` - Run npm audit
+- [x] Security improvements (based on Gemini review):
+  - [x] Confirmation prompts before replacing Node.js installations
+  - [x] NVM installation security warnings
+  - [x] Process-specific killing (no broad grep patterns)
+  - [x] Docker operations target only frontend service
+  - [ ] Update Dockerfile.dev to use non-root user (deferred to Phase 3)
+- [x] Environment detection:
+  - [x] OS detection with uname
+  - [x] Architecture detection (x86_64, arm64)
+  - [x] Automatic Node.js binary selection
+- [x] Documentation updates:
+  - [x] CHANGELOG.md updated with v0.28.0 release notes
+  - [x] Clear installation instructions in scripts
+  - [x] Troubleshooting messages built into scripts
+
+### Testing & Validation ✅ COMPLETE
+- [x] Tested with Playwright MCP browser automation
+- [x] Verified Docker deployment works
+- [x] Verified native Node.js deployment works
+- [x] Tested stop/start cycles
+- [x] Verified scripts work without sudo
+- [x] Hot reload confirmed working in both modes
+
 ## Phase 1: Frontend UI/UX with Mock Data 🎨
 
 ### Frontend Foundation
