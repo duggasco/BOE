@@ -1,0 +1,170 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: boe-postgres
+    environment:
+      POSTGRES_USER: boe_user
+      POSTGRES_PASSWORD: boe_password
+      POSTGRES_DB: boe_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/alembic:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U boe_user -d boe_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - boe-network
+
+  # Redis for Celery and caching
+  redis:
+    image: redis:7-alpine
+    container_name: boe-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - boe-network
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: boe-backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://boe_user:boe_password@postgres:5432/boe_db
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-this-in-production}
+      DEBUG: "true"
+      ALLOWED_ORIGINS: '["http://localhost:5173", "http://localhost:3000"]'
+    volumes:
+      - ./backend:/app
+      - backend_uploads:/app/uploads
+      - backend_exports:/app/temp/exports
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - boe-network
+
+  # Celery Worker for background tasks
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: boe-celery-worker
+    environment:
+      DATABASE_URL: postgresql+asyncpg://boe_user:boe_password@postgres:5432/boe_db
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    volumes:
+      - ./backend:/app
+      - backend_uploads:/app/uploads
+      - backend_exports:/app/temp/exports
+    depends_on:
+      - postgres
+      - redis
+    command: celery -A app.workers.celery_app worker --loglevel=info
+    networks:
+      - boe-network
+
+  # Celery Beat for scheduled tasks
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: boe-celery-beat
+    environment:
+      DATABASE_URL: postgresql+asyncpg://boe_user:boe_password@postgres:5432/boe_db
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - postgres
+      - redis
+    command: celery -A app.workers.celery_app beat --loglevel=info
+    networks:
+      - boe-network
+
+  # Flower for Celery monitoring (optional)
+  flower:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: boe-flower
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    command: celery -A app.workers.celery_app flower --port=5555
+    networks:
+      - boe-network
+
+  # Frontend (React + Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: boe-frontend
+    environment:
+      VITE_API_URL: http://localhost:8000/api/v1
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - boe-network
+
+  # pgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: boe-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@boe.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - boe-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_uploads:
+  backend_exports:
+
+networks:
+  boe-network:
+    driver: bridge

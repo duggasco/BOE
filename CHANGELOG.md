@@ -2,7 +2,52 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
-## [0.29.0] - 2025-08-08 (Latest)
+## [0.30.0] - 2025-08-08 (Latest)
+
+### Added - Phase 3 Backend Foundation Implementation
+
+#### Comprehensive FastAPI Backend Created
+Successfully implemented the core backend infrastructure for the BOE Replacement System:
+
+**Database Models (SQLAlchemy with Async)**:
+- User, Group, Role, Permission models with many-to-many relationships
+- Report, ReportVersion, Folder, ReportExecution models with versioning
+- Field, DataTable, DataSource, FieldRelationship for metadata
+- Schedule, Distribution, ScheduleLog for automated reporting
+
+**API Implementation**:
+- JWT authentication with access/refresh tokens
+- Reports CRUD with versioning support
+- Query execution with WebSocket streaming
+- Field hierarchy API for UI
+- Comprehensive Pydantic schemas for validation
+
+**Security Enhancements (from Gemini Review)**:
+- Identified critical SQL injection vulnerability in dynamic query builder
+- Proposed secure formula parser using JSON schema approach
+- Token blacklist service design for revocation
+- Rate limiting strategy (application + infrastructure level)
+- Audit logging to ElasticSearch recommended
+
+**Infrastructure**:
+- Docker Compose with PostgreSQL, Redis, Celery
+- Separate containers for worker, beat scheduler, flower monitoring
+- Health checks and service dependencies
+- Development environment with hot reload
+
+**Key Security Improvements Needed**:
+1. Replace `text(field.calculation_formula)` with JSON-based formula definitions
+2. Implement token blacklist in Redis for logout/revocation
+3. Add rate limiting with slowapi at application level
+4. Use selectinload to prevent N+1 query problems
+5. Audit logging should go to ElasticSearch, not database
+
+**Testing**:
+- Frontend confirmed working with Playwright MCP
+- Report Builder UI functional
+- Database services running in Docker
+
+## [0.29.0] - 2025-08-08
 
 ### Changed - Backend Architecture Decision
 
