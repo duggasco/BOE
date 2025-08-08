@@ -11,15 +11,25 @@ from sqlalchemy.pool import NullPool
 from app.core.config import settings
 
 # Create async engine
-engine = create_async_engine(
-    str(settings.DATABASE_URL),
-    echo=settings.DEBUG,
-    future=True,
-    pool_size=20,
-    max_overflow=40,
-    pool_pre_ping=True,  # Verify connections before using
-    poolclass=NullPool if settings.DEBUG else None,  # Disable pooling in debug mode
-)
+if settings.DEBUG:
+    # Use NullPool in debug mode (no pooling)
+    engine = create_async_engine(
+        str(settings.DATABASE_URL),
+        echo=settings.DEBUG,
+        future=True,
+        pool_pre_ping=True,
+        poolclass=NullPool,
+    )
+else:
+    # Use default pool in production
+    engine = create_async_engine(
+        str(settings.DATABASE_URL),
+        echo=settings.DEBUG,
+        future=True,
+        pool_size=20,
+        max_overflow=40,
+        pool_pre_ping=True,
+    )
 
 # Create async session factory
 AsyncSessionLocal = async_sessionmaker(

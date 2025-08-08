@@ -5,14 +5,22 @@ User and authentication schemas
 from datetime import datetime
 from typing import Optional, List
 from uuid import UUID
-from pydantic import BaseModel, EmailStr, ConfigDict, Field
+from pydantic import BaseModel, EmailStr, ConfigDict, Field, field_validator
 
 
 class UserBase(BaseModel):
-    email: EmailStr
+    email: str  # Changed from EmailStr to allow .local domains
     username: str = Field(..., min_length=3, max_length=100)
     full_name: Optional[str] = None
     is_active: bool = True
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        """Basic email validation that allows .local domains"""
+        if '@' not in v or len(v.split('@')) != 2:
+            raise ValueError('Invalid email format')
+        return v
 
 
 class UserCreate(UserBase):
@@ -20,11 +28,19 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     username: Optional[str] = Field(None, min_length=3, max_length=100)
     full_name: Optional[str] = None
     password: Optional[str] = Field(None, min_length=8, max_length=100)
     is_active: Optional[bool] = None
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v: Optional[str]) -> Optional[str]:
+        """Basic email validation that allows .local domains"""
+        if v is not None and ('@' not in v or len(v.split('@')) != 2):
+            raise ValueError('Invalid email format')
+        return v
 
 
 class UserInDB(UserBase):

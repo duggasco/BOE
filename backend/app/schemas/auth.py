@@ -5,7 +5,8 @@ These define the structure and validation rules for API requests/responses
 
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from uuid import UUID
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 
 
 class Token(BaseModel):
@@ -22,9 +23,17 @@ class TokenData(BaseModel):
 class UserBase(BaseModel):
     """Base user schema"""
     username: str = Field(..., min_length=3, max_length=50)
-    email: EmailStr
+    email: str  # Changed from EmailStr to allow .local domains
     full_name: Optional[str] = None
     is_active: bool = True
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        """Basic email validation that allows .local domains"""
+        if '@' not in v or len(v.split('@')) != 2:
+            raise ValueError('Invalid email format')
+        return v
 
 
 class UserCreate(UserBase):
@@ -34,16 +43,24 @@ class UserCreate(UserBase):
 
 class UserUpdate(BaseModel):
     """Schema for updating user information"""
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     full_name: Optional[str] = None
     password: Optional[str] = Field(None, min_length=8)
+    
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v: Optional[str]) -> Optional[str]:
+        """Basic email validation that allows .local domains"""
+        if v is not None and ('@' not in v or len(v.split('@')) != 2):
+            raise ValueError('Invalid email format')
+        return v
 
 
 class User(UserBase):
     """User response schema"""
     model_config = ConfigDict(from_attributes=True)
     
-    id: int
+    id: UUID  # Changed from int to UUID
     created_at: datetime
     updated_at: Optional[datetime] = None
     last_login: Optional[datetime] = None

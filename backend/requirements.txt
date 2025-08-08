@@ -30,6 +30,9 @@ xlsxwriter==3.1.9
 reportlab==4.0.8
 weasyprint==60.2  # For PDF generation
 
+# Rate limiting
+slowapi==0.1.9  # Rate limiting for FastAPI
+
 # Utilities
 python-dotenv==1.0.0
 httpx==0.26.0  # Async HTTP client

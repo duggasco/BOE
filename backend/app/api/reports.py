@@ -10,7 +10,7 @@ from sqlalchemy import select, func, and_
 from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
-from app.models import Report, ReportVersion, Folder, User
+from app.models import Report, ReportVersion, Folder, User, ReportExecution, Schedule
 from app.schemas.report import (
     ReportCreate, ReportUpdate, Report as ReportSchema,
     ReportWithDetails, FolderCreate, FolderUpdate,
@@ -64,15 +64,15 @@ async def list_reports(
     # Add execution and schedule counts
     for report in reports:
         exec_count = await db.execute(
-            select(func.count()).select_from(Report.executions).where(
-                Report.id == report.id
+            select(func.count()).select_from(ReportExecution).where(
+                ReportExecution.report_id == report.id
             )
         )
         report.execution_count = exec_count.scalar() or 0
         
         sched_count = await db.execute(
-            select(func.count()).select_from(Report.schedules).where(
-                Report.id == report.id
+            select(func.count()).select_from(Schedule).where(
+                Schedule.report_id == report.id
             )
         )
         report.schedule_count = sched_count.scalar() or 0
@@ -103,6 +103,9 @@ async def create_report(
         version=1
     )
     db.add(report)
+    
+    # Flush to get the report.id before creating version
+    await db.flush()
     
     # Create initial version
     version = ReportVersion(
