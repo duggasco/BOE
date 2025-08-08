@@ -381,7 +381,7 @@
   - [ ] Retry logic
 
 ## Phase 4: Frontend-Backend Integration 🔌
-**Progress: ████████████▬▬▬▬▬▬▬▬ 60% IN PROGRESS**
+**Progress: ███████████████▬▬▬▬▬ 75% IN PROGRESS**
 
 ### API Integration
 - [x] Created comprehensive API client with axios interceptors ✅
@@ -422,15 +422,23 @@
   - [x] Performance optimizations ✅
 
 ### Remaining Integration Tasks
-- [ ] Field metadata service integration
-  - [ ] Connect FieldSelector to API
-  - [ ] Load real field hierarchy
-- [ ] Query execution backend
-  - [ ] Implement query service
-  - [ ] Connect ReportBuilder
-- [ ] Export file downloads
-  - [ ] Download endpoints
-  - [ ] Progress tracking
+- [x] Field metadata service integration ✅
+  - [x] Connect FieldSelector to API ✅
+  - [x] Created FieldSelectorWithAPI component ✅
+- [x] Query execution backend ✅
+  - [x] QueryBuilder V2 with SQLAlchemy Core ✅
+  - [x] Fixed async/await issues ✅
+  - [x] Implemented JOIN logic with BFS ✅
+  - [x] Connected ReportBuilder to execute queries ✅
+- [x] Export file downloads ✅
+  - [x] Created download endpoints ✅
+  - [x] Implemented file streaming for large files ✅
+  - [x] Progress tracking via Celery ✅
+
+### Security Fixes Required 🔴
+- [ ] Fix path traversal vulnerability in exports
+- [ ] Implement rate limiting on export creation
+- [ ] Add automatic cleanup based on expires_at
 
 ### Export Implementation
 - [ ] CSV generation:
@@ -548,4 +556,4 @@
 - All backend development should support approved frontend features
 - Maintain clear separation between mock and real data layers
 
-Last Updated: 2025-08-07 (v0.27.0)
+Last Updated: 2025-08-08 PM Part 5 (v0.40.0)

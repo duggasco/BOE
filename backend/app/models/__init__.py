@@ -12,6 +12,7 @@ from app.models.schedule import (
     Schedule, Distribution, ScheduleLog, 
     ScheduleStatus, DistributionType
 )
+from app.models.export import Export, ExportStatus, ExportFormat
 
 __all__ = [
     # User models
@@ -26,5 +27,8 @@ __all__ = [
     
     # Schedule models
     'Schedule', 'Distribution', 'ScheduleLog', 
-    'ScheduleStatus', 'DistributionType'
+    'ScheduleStatus', 'DistributionType',
+    
+    # Export models
+    'Export', 'ExportStatus', 'ExportFormat'
 ]

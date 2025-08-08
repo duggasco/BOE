@@ -46,6 +46,7 @@ class Report(Base):
     versions = relationship('ReportVersion', back_populates='report', cascade='all, delete-orphan')
     schedules = relationship('Schedule', back_populates='report', cascade='all, delete-orphan')
     executions = relationship('ReportExecution', back_populates='report', cascade='all, delete-orphan')
+    exports = relationship('Export', back_populates='report', cascade='all, delete-orphan')
 
 
 class ReportVersion(Base):

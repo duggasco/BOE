@@ -59,6 +59,7 @@ class User(Base):
     roles = relationship('Role', secondary=user_roles, back_populates='users')
     reports = relationship('Report', back_populates='owner')
     audit_logs = relationship('AuditLog', back_populates='user')
+    exports = relationship('Export', back_populates='user')
 
 
 class Group(Base):

@@ -21,7 +21,7 @@ from app.core.database import engine
 logger = logging.getLogger(__name__)
 
 
-class QueryBuilder:
+class QueryBuilderV2:
     """
     Production-ready query builder using SQLAlchemy Core expression language
     - Prevents SQL injection by using SQLAlchemy's parameterized queries

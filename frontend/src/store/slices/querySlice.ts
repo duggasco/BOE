@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { queryExecutor } from '../../services/queryExecutor';
-import type { QueryResult } from '../../services/queryExecutor';
+import { queryExecutor } from '../../services/queryExecutorWithAPI';
+import type { QueryResult } from '../../services/queryExecutorWithAPI';
 import type { DataQuery } from '../../types';
 
 interface QueryState {
