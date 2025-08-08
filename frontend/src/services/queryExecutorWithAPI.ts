@@ -26,7 +26,7 @@ export class QueryExecutorWithAPI {
   
   private constructor() {
     // Check if we should use the API or mock data
-    this.useAPI = process.env.REACT_APP_USE_API === 'true' || 
+    this.useAPI = import.meta.env.VITE_USE_API === 'true' || 
                   window.location.hostname !== 'localhost';
   }
   

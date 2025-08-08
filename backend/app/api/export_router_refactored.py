@@ -6,12 +6,10 @@ Uses ExportService for business logic separation
 from typing import List
 from datetime import datetime
 from pathlib import Path
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 import aiofiles
@@ -19,7 +17,7 @@ import aiofiles
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.core.config import settings
-from app.models import User, Report, Export
+from app.models import User, Report
 from app.schemas.export import (
     ExportRequest,
     ExportResponse,
@@ -179,6 +177,9 @@ async def download_export(
         mime_type = export_service.get_mime_type(file_ext)
         
         # Get report name for filename
+        from sqlalchemy import select
+        from uuid import UUID
+        
         result = await db.execute(
             select(Export, Report)
             .join(Report)
@@ -361,3 +362,7 @@ async def trigger_cleanup(
     except Exception as e:
         logger.error(f"Export cleanup failed: {e}")
         raise HTTPException(status_code=500, detail="Export cleanup failed")
+
+
+# Import for missing Export model
+from app.models import Export

@@ -15,14 +15,15 @@ from app.schemas.report import (
     ReportCreate, ReportUpdate, Report as ReportSchema,
     ReportWithDetails, FolderCreate, FolderUpdate,
     Folder as FolderSchema, FolderWithReports,
-    ReportVersion as ReportVersionSchema
+    ReportVersion as ReportVersionSchema,
+    PaginatedResponse
 )
 from app.api.auth import get_current_user
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[ReportWithDetails])
+@router.get("/", response_model=PaginatedResponse[ReportWithDetails])
 async def list_reports(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -33,30 +34,47 @@ async def list_reports(
     is_template: Optional[bool] = None
 ):
     """List reports accessible to the current user"""
-    query = select(Report).options(
+    base_query = select(Report).options(
         selectinload(Report.owner),
         selectinload(Report.folder)
     )
     
     # Filter by user (in production, also check permissions)
     if not current_user.is_superuser:
-        query = query.where(Report.owner_id == current_user.id)
+        base_query = base_query.where(Report.owner_id == current_user.id)
     
     # Apply filters
     if folder_id:
-        query = query.where(Report.folder_id == folder_id)
+        base_query = base_query.where(Report.folder_id == folder_id)
     
     if search:
-        query = query.where(
+        base_query = base_query.where(
             Report.name.ilike(f"%{search}%") |
             Report.description.ilike(f"%{search}%")
         )
     
     if is_template is not None:
-        query = query.where(Report.is_template == is_template)
+        base_query = base_query.where(Report.is_template == is_template)
+    
+    # Get total count
+    count_query = select(func.count()).select_from(Report)
+    if not current_user.is_superuser:
+        count_query = count_query.where(Report.owner_id == current_user.id)
+    if folder_id:
+        count_query = count_query.where(Report.folder_id == folder_id)
+    if search:
+        count_query = count_query.where(
+            Report.name.ilike(f"%{search}%") |
+            Report.description.ilike(f"%{search}%")
+        )
+    if is_template is not None:
+        count_query = count_query.where(Report.is_template == is_template)
+    
+    total_result = await db.execute(count_query)
+    total = total_result.scalar() or 0
     
     # Apply pagination
-    query = query.offset(skip).limit(limit)
+    query = base_query.offset(skip).limit(limit)
     
     result = await db.execute(query)
     reports = result.scalars().all()
@@ -77,7 +95,12 @@ async def list_reports(
         )
         report.schedule_count = sched_count.scalar() or 0
     
-    return reports
+    return PaginatedResponse(
+        items=reports,
+        total=total,
+        skip=skip,
+        limit=limit
+    )
 
 
 @router.post("/", response_model=ReportSchema)

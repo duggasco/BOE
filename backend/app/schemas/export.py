@@ -81,6 +81,7 @@ class ExportResponse(BaseModel):
     created_at: datetime = Field(..., description="When the export was created")
     started_at: Optional[datetime] = Field(None, description="When processing started")
     completed_at: Optional[datetime] = Field(None, description="When export completed")
+    expires_at: Optional[datetime] = Field(None, description="When the export will expire and be deleted")
     download_url: Optional[str] = Field(None, description="URL to download the file when ready")
     file_size: Optional[int] = Field(None, description="File size in bytes")
     error_message: Optional[str] = Field(None, description="Error message if failed")

@@ -27,7 +27,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.celery_app import celery_app
-from app.core.database import AsyncSessionLocal
+from app.core.database import async_session_maker
 from app.models.report import Report, ReportExecution
 from app.models.user import User
 from app.services.query_builder import QueryBuilder
@@ -438,7 +438,7 @@ def cleanup_expired_exports_task():
     import asyncio
     
     async def cleanup():
-        async with AsyncSessionLocal() as db:
+        async with async_session_maker() as db:
             from app.models import Export
             from sqlalchemy import select, and_
             

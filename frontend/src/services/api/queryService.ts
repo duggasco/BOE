@@ -3,7 +3,7 @@
  * Handles query execution through the backend API
  */
 
-import { apiClient } from './client';
+import apiClient from './client';
 import type { DataQuery, Field, Filter } from '../../types';
 
 export interface QueryRequest {

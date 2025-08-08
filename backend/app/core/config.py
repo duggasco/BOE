@@ -70,8 +70,12 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE: int = 100 * 1024 * 1024  # 100MB
 
     # Export settings
-    EXPORT_TEMP_DIR: str = "./temp/exports"
-    EXPORT_RETENTION_HOURS: int = 24
+    EXPORT_STORAGE_PATH: str = "/tmp/exports"  # Secure export directory
+    EXPORT_RETENTION_HOURS: int = 24  # How long to keep exports before cleanup
+    EXPORT_MAX_RATE_PER_HOUR: int = 10  # Maximum exports per user per hour
+    EXPORT_MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB maximum file size
+    EXPORT_EXPIRY_HOURS: int = 24  # When exports expire and are deleted
+    EXPORT_SECURE_HEADERS: bool = True  # Add security headers to downloads
 
     # Pagination
     DEFAULT_PAGE_SIZE: int = 20
