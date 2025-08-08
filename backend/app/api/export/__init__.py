@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # Rate limiter
 limiter = Limiter(key_func=get_remote_address)
 
-router = APIRouter(prefix="/export", tags=["export"])
+router = APIRouter(tags=["export"])
 
 
 def get_download_url(export_id: str, request: Request) -> str:

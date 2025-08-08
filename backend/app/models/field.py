@@ -91,6 +91,11 @@ class Field(Base):
     is_searchable = Column(Boolean, default=True)
     is_sortable = Column(Boolean, default=True)
     
+    # Security settings
+    required_role = Column(String(50))  # Minimum role required to access this field
+    required_permissions = Column(JSON)  # List of permissions required to access this field
+    is_restricted = Column(Boolean, default=True, nullable=False)  # Secure by default - must explicitly mark as unrestricted
+    
     # Metadata
     tags = Column(JSON)  # List of tags for categorization
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

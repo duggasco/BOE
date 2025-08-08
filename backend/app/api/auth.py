@@ -9,13 +9,15 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.schemas.auth import Token, TokenData, User, UserCreate, UserInDB
+from app.schemas.auth import Token, TokenData, User as UserSchema, UserCreate, UserInDB
 from app.services.user_service import UserService
+from app.models.user import User
 
 # Create router
 router = APIRouter()
@@ -91,7 +93,7 @@ async def get_current_active_user(
     return current_user
 
 
-@router.post("/register", response_model=User)
+@router.post("/register", response_model=UserSchema)
 async def register(
     user_create: UserCreate,
     db: AsyncSession = Depends(get_db)
@@ -154,12 +156,38 @@ async def login(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/me", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
+@router.get("/me")
+async def read_users_me(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
     """
-    Get current user information
+    Get current user information with roles and groups
     """
-    return current_user
+    from app.services.rbac_service import RBACService
+    
+    # Use centralized RBAC service for consistent permission resolution
+    rbac_service = RBACService(db)
+    user_info = await rbac_service.get_user_full_info(current_user.id)
+    
+    # Return empty dict if user not found (shouldn't happen with authenticated user)
+    if not user_info:
+        return {
+            "id": str(current_user.id),
+            "email": current_user.email,
+            "username": current_user.username,
+            "full_name": current_user.full_name,
+            "is_active": current_user.is_active,
+            "is_superuser": current_user.is_superuser,
+            "created_at": current_user.created_at,
+            "updated_at": current_user.updated_at,
+            "last_login": current_user.last_login,
+            "roles": [],
+            "groups": [],
+            "permissions": []
+        }
+    
+    return user_info
 
 
 @router.post("/refresh", response_model=Token)

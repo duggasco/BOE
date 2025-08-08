@@ -177,13 +177,15 @@ class QueryBuilder:
                     col = Column(field.column_name, nullable=True)
                     columns.append(col)
             
-            # Create Table object
+            # Create Table object  
+            # Use actual table name from database, not the alias
             table_name = table.table_name
-            if table.schema_name:
+            if table.schema_name and table.schema_name != 'public':
+                # Only prepend schema if it's not public (default)
                 table_name = f"{table.schema_name}.{table_name}"
             
             sa_table = Table(
-                table.alias or table.table_name,
+                table_name,  # Use actual table name, not alias
                 self.metadata,
                 *columns,
                 extend_existing=True
@@ -222,7 +224,19 @@ class QueryBuilder:
             
             elif not field.is_dimension and str(field.id) not in group_by:
                 # Apply aggregation for measures
-                agg = field.default_aggregation.value.upper() if field.default_aggregation else "SUM"
+                # Handle both enum and string types for default_aggregation
+                try:
+                    if hasattr(field.default_aggregation, 'value'):
+                        agg = field.default_aggregation.value.upper()
+                    elif field.default_aggregation:
+                        agg = str(field.default_aggregation).upper()
+                    else:
+                        agg = "SUM"
+                except Exception as e:
+                    logger.error(f"Error processing aggregation for field {field.display_name}: {e}")
+                    logger.error(f"field.default_aggregation type: {type(field.default_aggregation)}")
+                    logger.error(f"field.default_aggregation value: {field.default_aggregation}")
+                    raise
                 
                 if agg == "SUM":
                     expr = func.sum(column)
@@ -315,7 +329,7 @@ class QueryBuilder:
                     'target_table': target_field.table_id,
                     'source_column': source_field.column_name,
                     'target_column': target_field.column_name,
-                    'join_type': rel.join_type.value if rel.join_type else 'inner',
+                    'join_type': rel.join_type.lower() if rel.join_type else 'inner',
                     'relationship': rel
                 })
         

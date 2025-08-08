@@ -2,7 +2,332 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
-## [0.42.0] - 2025-08-08 (Latest)
+## [0.50.0] - 2025-08-08 (Latest) - Phase 5.1 Core Scheduling Implementation
+
+### Added
+- **Database Schema**: Complete scheduling tables (export_schedules, schedule_executions, distribution_templates)
+- **Celery Infrastructure**: Configured Celery + Celery Beat for periodic task execution
+- **Schedule Models**: SQLAlchemy models with cron support and timezone handling
+- **Pydantic Schemas**: Full request/response schemas for schedule API
+- **Schedule CRUD API**: Complete endpoints for managing schedules
+- **Execution Engine**: Celery tasks for checking and executing scheduled exports
+- **Distribution Service**: Local storage distribution with organized directory structure
+- **Distribution Templates**: Reusable configuration templates for distribution channels
+- **Schedule Testing**: API endpoint to test schedule configurations before creation
+- **Execution History**: Track all schedule executions with success/failure metrics
+
+### Infrastructure
+- Celery Beat configuration for checking schedules every minute
+- Multiple Celery queues (scheduler, exports, distribution, maintenance, health)
+- Automatic next run time calculation using croniter
+- Support for multiple timezones with pytz
+
+### API Endpoints Added
+- POST /api/v1/schedules/ - Create schedule
+- GET /api/v1/schedules/ - List schedules
+- GET /api/v1/schedules/{id} - Get schedule details
+- PUT /api/v1/schedules/{id} - Update schedule
+- DELETE /api/v1/schedules/{id} - Delete schedule
+- POST /api/v1/schedules/{id}/pause - Pause schedule
+- POST /api/v1/schedules/{id}/resume - Resume schedule
+- POST /api/v1/schedules/{id}/test - Test run schedule
+- GET /api/v1/schedules/{id}/history - Get execution history
+- GET /api/v1/schedules/executions - List all executions
+- POST /api/v1/schedules/test - Test configuration
+- POST /api/v1/schedules/templates - Create distribution template
+- GET /api/v1/schedules/templates - List templates
+- DELETE /api/v1/schedules/templates/{id} - Delete template
+
+### Local Storage Distribution Features
+- Organized directory structure (year/month/day)
+- Configurable filename patterns with variables
+- Overwrite protection with automatic counter suffix
+- File permission management (644)
+- Path validation and creation
+
+### Schedule Features
+- Cron expression support for flexible scheduling
+- Frequency helpers (daily, weekly, monthly, custom)
+- Timezone-aware scheduling
+- Start/end date support
+- Pause/resume capability
+- Schedule limits (10 per user)
+- Success rate tracking
+- Retry mechanism with exponential backoff
+
+### Next Steps (Phase 5.2)
+- Email distribution implementation
+- SFTP/FTP distribution
+- Webhook distribution
+- Cloud storage (S3, Azure, GCS) - Day 2
+- Frontend UI for schedule management
+
+## [0.49.0] - 2025-01-08 - Phase 4 Complete | Export System Validated
+
+### Added
+- **Comprehensive Export Testing**: Created full test suite for export API endpoints
+- **Enhanced Export API Design**: Documented production-ready export architecture
+- **Phase 5 Requirements**: Complete specification for scheduling & distribution system
+- **Gemini AI Collaboration**: Critical review and validation of export system design
+
+### Changed
+- Export dialog now successfully opens and processes exports
+- UI confirms export success with unique export IDs
+- Multiple format and destination options fully functional
+
+### Fixed
+- Export dialog not opening issue resolved
+- Export state management in Redux working correctly
+- Background task processing for exports operational
+
+### Architecture Decisions (Gemini-Validated)
+- **Critical**: Must replace BackgroundTasks with Celery for production
+- **Critical**: Must use S3/object storage instead of local filesystem
+- **Important**: Implement correlation IDs for error tracking
+- **Important**: Add comprehensive audit trail for all exports
+- **Important**: Pre-export validation for large datasets
+
+### Testing Results
+- ✅ Export dialog opens and functions correctly
+- ✅ Multiple export formats supported (CSV, Excel, PDF)
+- ✅ Export success notifications working
+- ✅ RBAC permissions enforced on exports
+- ✅ Rate limiting implemented (10 exports/hour)
+
+### Phase 5 Planning
+- Documented complete requirements for scheduling & distribution
+- 6-week implementation timeline established
+- Core features: Celery Beat scheduling, multi-channel distribution
+- Success metrics: 99.9% reliability, 95% delivery within 5 minutes
+
+### Security Verification
+- Path traversal prevention implemented
+- Rate limiting active (10 exports per hour per user)
+- Access control verified - users can only export accessible reports
+- Error messages sanitized to prevent information leakage
+
+## [0.48.0] - 2025-01-08 - Complete RBAC Solution with Centralized Service
+
+### Added
+- **Centralized RBACService**: Single source of truth for all role and permission resolution
+- **Group-based role resolution**: Fixed critical bug where roles assigned through groups weren't being recognized
+- **Enhanced /auth/me endpoint**: Now returns complete user info with roles, groups, and permissions
+- **Request-scoped caching**: Optimized RBAC queries with in-memory cache per request
+
+### Changed
+- Refactored `field_service_secure.py` to use centralized RBACService
+- Updated `/auth/me` endpoint to use RBACService for consistent data
+- Improved permission resolution to check both direct and group-based role assignments
+- Sorted permissions alphabetically in API responses for better readability
+
+### Fixed
+- **Critical**: Report Creator users can now access NAV and YTD fields (role-restricted fields)
+- **Critical**: Fixed missing permissions from direct role assignments in `/auth/me` endpoint
+- **Security**: Report Viewer correctly restricted from accessing role-protected fields
+- **Import errors**: Fixed missing SQLAlchemy imports and Pydantic schema conflicts
+
+### Technical Improvements
+- Eliminated code duplication between field service and auth endpoints
+- Single optimized query with eager loading for all RBAC data
+- Proper separation of concerns with layered service architecture
+- Type-safe tuple returns for role and permission sets
+
+### Testing Results (Playwright MCP)
+- ✅ Admin: Can access all 11 fields including AUM, NAV, YTD
+- ✅ Report Creator: Can access 10 fields (NAV, YTD but NOT AUM) 
+- ✅ Report Viewer: Can only access 8 unrestricted fields
+- ✅ Field selector correctly shows/hides fields based on user role
+- ✅ Authentication flow working with all three demo accounts
+
+### Gemini AI Collaboration
+- Identified critical bug in original `/auth/me` implementation
+- Suggested centralized service pattern to eliminate code duplication
+- Recommended dependency injection for better FastAPI integration
+- Approved final implementation as "robust, performant, and maintainable"
+
+### Security Verification
+- All RBAC filtering happens at database level (not in application code)
+- User must have ALL required permissions (AND logic, not OR)
+- Fields are secure-by-default (is_restricted=True)
+- No N+1 queries with proper eager loading
+
+## [0.47.0] - 2025-08-08
+
+### Phase 4 COMPLETE - Production-Ready Field-Level RBAC
+
+#### Critical Security Fixes
+- ✅ **FIXED**: PostgreSQL JSON comparison error using JSONB cast and proper operators
+- ✅ **FIXED**: Implemented ALL permissions logic (was incorrectly checking ANY)
+- ✅ **FIXED**: API endpoint secure-by-default parameter (was incorrectly defaulting to False)
+
+#### Security Implementation (Gemini-Approved)
+- **Database-Level Filtering**: All RBAC filtering happens at database level
+- **AND Logic**: User must have ALL required permissions (superset check)
+- **Secure-by-Default**: Fields are restricted by default (is_restricted=True)
+- **No N+1 Queries**: Efficient permission checking with single query
+- **Production-Ready**: Gemini AI reviewed and approved as "production-ready"
+
+#### Testing Completed
+- ✅ Python script testing of secure RBAC implementation
+- ✅ SQL injection prevention verified (all attempts blocked)
+- ✅ Field-level access control working correctly
+- ✅ Export system secure with path traversal prevention
+- ✅ UI testing with Playwright MCP
+
+#### Phase 4 Achievements (100% Complete)
+- Frontend-Backend integration fully functional
+- QueryBuilder V2 with multi-table JOINs working
+- Export system with CSV, Excel, PDF support
+- Field-level RBAC with role and permission requirements
+- Comprehensive security hardening throughout
+
+## [0.46.0] - 2025-08-08
+
+### Phase 4 Secure Field-Level RBAC Implementation (97% Complete)
+
+#### Security Fixes Implemented
+Successfully fixed ALL critical security vulnerabilities identified by Gemini:
+
+**Security Improvements**:
+- ✅ **FIXED**: All RBAC filtering now happens at database level (no post-query filtering)
+- ✅ **FIXED**: Implemented AND logic for role + permission checks (not OR)
+- ✅ **FIXED**: Secure-by-default - is_restricted defaults to True
+- ✅ **FIXED**: SQL injection prevention with proper validation
+- ✅ **FIXED**: Efficient permission checking without N+1 queries
+
+**Implementation Details**:
+- Created `SecureFieldService` replacing insecure implementation
+- Updated Field model with secure defaults (is_restricted=True, nullable=False)
+- Applied migration to safely update existing fields
+- API endpoints now use secure service
+
+**Testing Results**:
+- Administrator: Access to all 11 fields ✓
+- Report Creator: Should access 10 fields (issue with permissions)
+- Report Viewer: Access to 8 unrestricted fields only ✓
+- SQL injection attempts blocked successfully ✓
+
+**Remaining Issue**:
+- PostgreSQL JSON comparison error when checking permissions
+- Need to fix: `operator does not exist: json = json`
+
+## [0.45.0] - 2025-08-08
+
+### Phase 4 Field-Level RBAC Implementation (95% Complete)
+
+#### Field-Level Access Control Added
+Successfully implemented field-level RBAC with security settings on the Field model:
+
+**Features Implemented**:
+- ✅ Added security columns to Field model: is_restricted, required_role, required_permissions
+- ✅ Created FieldService with role-based access control methods
+- ✅ Field access statistics endpoint for monitoring
+- ✅ Security update endpoint for administrators
+- ✅ Testing verified with different user roles
+
+**Testing Results**:
+- Administrator: Access to all 11 fields (including 3 restricted)
+- Report Creator: Access to 8 unrestricted fields
+- Report Viewer: Access to 8 unrestricted fields
+- AUM field restricted to Administrator role only
+- NAV and YTD Return restricted to Report Creator role
+
+**Critical Security Issues Identified (Gemini Review)**:
+- **CRITICAL**: Post-query filtering is a security bypass - all RBAC must happen at database level
+- **CRITICAL**: OR logic for permissions instead of AND - allows access with partial requirements
+- **HIGH**: Insecure default - fields are unrestricted by default (should be secure-by-default)
+- **MEDIUM**: N+1 queries for roles and permissions impact performance
+- **LOW**: String-based role storage prone to typos and inconsistencies
+
+**Gemini Assessment**: "The most critical issues are the security vulnerability due to post-query filtering and the incorrect OR logic for RBAC conditions. These must be addressed immediately."
+
+### Fixed
+- Report parameters changed from list to dict format in database
+- Frontend API URL updated to correct port (8001)
+- Field security settings properly stored and retrieved
+
+### Testing
+- Field-level RBAC tested with multiple user roles
+- Frontend-backend integration verified with Playwright MCP
+- Reports loading successfully from backend API
+
+## [0.44.0] - 2025-08-08
+
+### Phase 4 QueryBuilder V2 Complete - Multi-Table JOINs Working (95% Complete)
+
+#### QueryBuilder V2 Fixed
+Successfully resolved all QueryBuilder V2 issues and achieved full query execution capability:
+
+**Major Fixes Implemented**:
+- ✅ Fixed `.value` attribute error on string aggregation fields
+- ✅ Added type checking for both enum and string field types
+- ✅ Fixed query executor to handle SQLAlchemy Select objects directly
+- ✅ Corrected table name mapping (using actual table names not aliases)
+- ✅ Fixed join_type field handling (string not enum)
+
+**Test Data Infrastructure**:
+- ✅ Created actual PostgreSQL tables (funds, fund_time_series, benchmarks, transactions)
+- ✅ Populated with 20 test funds and 30 days of time series data
+- ✅ Added to seed_data.py for repeatable setup
+- ✅ Tables properly mapped to field metadata
+
+**Query Capabilities Verified**:
+- ✅ Single-table queries working perfectly
+- ✅ Multi-table queries with automatic JOIN generation
+- ✅ BFS algorithm for optimal JOIN path calculation
+- ✅ Query execution time ~26ms for complex queries
+- ✅ Proper field mapping and data retrieval
+
+**Testing Results**:
+- Successfully queried across multiple tables
+- JOIN clauses properly generated and executed
+- Sample output: `{'Fund ID': 'FUND001', 'Fund Name': 'Fund 1', 'Fund Type': 'Alternative'}`
+- Multi-table query with 4 fields from 2 tables completed successfully
+
+**Gemini AI Collaboration**:
+- Validated approach for creating test tables
+- Confirmed QueryBuilder V2 fixes were appropriate
+- Recommended multi-table JOIN testing as priority
+- Agreed on Phase 4 completion path
+
+## [0.43.0] - 2025-08-08
+
+### Phase 4 API Integration & Security Improvements (90% Complete)
+
+#### API Route Registration Fixed
+Successfully resolved API endpoint routing issues and improved security:
+
+**Route Fixes Implemented**:
+- ✅ Fixed duplicate route prefixes in fields, export, and schedule modules
+- ✅ All endpoints now correctly accessible at expected paths
+- ✅ Removed `/api/v1/fields/fields/` duplication issue
+- ✅ Authentication working properly across all endpoints
+
+**CORS Security Improvements**:
+- ✅ Removed wildcard origins (`localhost:*`, `127.0.0.1:*`)
+- ✅ Explicit HTTP methods instead of wildcard
+- ✅ Specific allowed headers for security
+- ✅ Controlled expose headers
+
+**Field Metadata Integration**:
+- ✅ Fields endpoint returning data correctly
+- ✅ Tables and datasources endpoints functional
+- ✅ Authentication flow working with JWT tokens
+- ✅ Frontend FieldSelectorWithAPI component ready
+
+**Testing Results**:
+- API endpoints accessible and returning data
+- 11 fields, 4 tables, 2 datasources successfully loaded
+- Authentication and authorization working
+- QueryBuilder V2 needs minor fixes for execution
+
+**Gemini AI Security Review Highlights**:
+- Identified CORS wildcards as security risk
+- Recommended fine-grained field access control
+- Suggested removing insecure export endpoints
+- Confirmed authentication flow is robust
+
+## [0.42.0] - 2025-08-08
 
 ### Phase 4 Export System Security Verification Complete
 

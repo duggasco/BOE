@@ -284,7 +284,10 @@ async def create_fields(db: AsyncSession, tables):
             field_type=FieldType.CURRENCY,
             is_dimension=False,
             default_aggregation=AggregationType.SUM,
-            description="Assets under management"
+            description="Assets under management",
+            is_restricted=True,
+            required_role="Administrator",
+            required_permissions=["reports.read", "reports.execute"]
         ),
     ]
     fields.extend(fund_fields)
@@ -313,7 +316,9 @@ async def create_fields(db: AsyncSession, tables):
             table_id=tables[1].id,
             field_type=FieldType.CURRENCY,
             is_dimension=False,
-            description="Net asset value"
+            description="Net asset value",
+            is_restricted=True,
+            required_role="Report Creator"
         ),
         Field(
             column_name="return_1d",
@@ -536,6 +541,115 @@ async def create_reports(db: AsyncSession, users, folders, fields):
     return reports
 
 
+async def create_actual_data_tables(db: AsyncSession):
+    """Create actual data tables with sample data for testing"""
+    from sqlalchemy import text
+    import random
+    from datetime import date, timedelta
+    
+    # Create funds table
+    await db.execute(text("""
+        CREATE TABLE IF NOT EXISTS funds (
+            fund_id VARCHAR PRIMARY KEY,
+            fund_name VARCHAR,
+            fund_type VARCHAR,
+            inception_date DATE,
+            manager VARCHAR
+        )
+    """))
+    
+    # Create fund_time_series table
+    await db.execute(text("""
+        CREATE TABLE IF NOT EXISTS fund_time_series (
+            fund_id VARCHAR,
+            date DATE,
+            nav DECIMAL(10,2),
+            return_1d DECIMAL(10,4),
+            aum DECIMAL(15,2),
+            PRIMARY KEY (fund_id, date)
+        )
+    """))
+    
+    # Create benchmarks table
+    await db.execute(text("""
+        CREATE TABLE IF NOT EXISTS benchmarks (
+            benchmark_id VARCHAR PRIMARY KEY,
+            benchmark_name VARCHAR,
+            asset_class VARCHAR
+        )
+    """))
+    
+    # Create transactions table
+    await db.execute(text("""
+        CREATE TABLE IF NOT EXISTS transactions (
+            transaction_id SERIAL PRIMARY KEY,
+            fund_id VARCHAR,
+            transaction_date DATE,
+            transaction_type VARCHAR,
+            amount DECIMAL(15,2)
+        )
+    """))
+    
+    # Insert sample funds
+    fund_types = ['Equity', 'Fixed Income', 'Balanced', 'Money Market', 'Alternative']
+    managers = ['Alpha Investments', 'Beta Capital', 'Gamma Partners', 'Delta Advisors']
+    
+    for i in range(1, 21):  # Create 20 funds
+        fund_id = f'FUND{i:03d}'
+        await db.execute(text("""
+            INSERT INTO funds (fund_id, fund_name, fund_type, inception_date, manager)
+            VALUES (:fund_id, :fund_name, :fund_type, :inception_date, :manager)
+            ON CONFLICT (fund_id) DO NOTHING
+        """), {
+            'fund_id': fund_id,
+            'fund_name': f'Fund {i}',
+            'fund_type': random.choice(fund_types),
+            'inception_date': date(2020, 1, 1) + timedelta(days=random.randint(0, 365)),
+            'manager': random.choice(managers)
+        })
+        
+        # Insert time series data for each fund (last 30 days)
+        base_nav = 100.0 + random.uniform(-20, 50)
+        for days_ago in range(30):
+            trade_date = date.today() - timedelta(days=days_ago)
+            nav = base_nav * (1 + random.uniform(-0.02, 0.02))  # Daily fluctuation
+            return_1d = random.uniform(-0.02, 0.02)
+            aum = nav * random.uniform(1000000, 10000000)
+            
+            await db.execute(text("""
+                INSERT INTO fund_time_series (fund_id, date, nav, return_1d, aum)
+                VALUES (:fund_id, :date, :nav, :return_1d, :aum)
+                ON CONFLICT (fund_id, date) DO NOTHING
+            """), {
+                'fund_id': fund_id,
+                'date': trade_date,
+                'nav': nav,
+                'return_1d': return_1d,
+                'aum': aum
+            })
+            base_nav = nav  # Use previous NAV as base for next day
+    
+    # Insert sample benchmarks
+    benchmarks = [
+        ('SP500', 'S&P 500 Index', 'Equity'),
+        ('AGG', 'Bloomberg Aggregate Bond Index', 'Fixed Income'),
+        ('MSCI', 'MSCI World Index', 'Equity')
+    ]
+    
+    for bench_id, bench_name, asset_class in benchmarks:
+        await db.execute(text("""
+            INSERT INTO benchmarks (benchmark_id, benchmark_name, asset_class)
+            VALUES (:benchmark_id, :benchmark_name, :asset_class)
+            ON CONFLICT (benchmark_id) DO NOTHING
+        """), {
+            'benchmark_id': bench_id,
+            'benchmark_name': bench_name,
+            'asset_class': asset_class
+        })
+    
+    await db.commit()
+
+
 async def seed_database():
     """Main function to seed the database"""
     async with AsyncSessionLocal() as db:
@@ -590,6 +704,11 @@ async def seed_database():
             print("Creating reports...")
             reports = await create_reports(db, users, folders, fields)
             print(f"Created {len(reports)} reports")
+            
+            # Create actual data tables with sample data
+            print("Creating actual data tables...")
+            await create_actual_data_tables(db)
+            print("Created actual data tables with sample data")
             
             print("\nDatabase seeding completed successfully!")
             print("\nTest Users:")

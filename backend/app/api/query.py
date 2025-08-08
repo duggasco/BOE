@@ -38,8 +38,8 @@ class QueryExecutor:
             # Build SQL query from request
             sql_query = await self.query_builder.build_query(request)
             
-            # Execute query
-            result = await self.db.execute(text(sql_query))
+            # Execute query (sql_query is already a Select object)
+            result = await self.db.execute(sql_query)
             rows = result.fetchall()
             
             # Convert rows to dict format
@@ -54,7 +54,7 @@ class QueryExecutor:
             
             # Get total count (without limit)
             count_query = await self.query_builder.build_count_query(request)
-            count_result = await self.db.execute(text(count_query))
+            count_result = await self.db.execute(count_query)
             total_rows = count_result.scalar() or 0
             
             return QueryResponse(
@@ -62,7 +62,7 @@ class QueryExecutor:
                 total_rows=total_rows,
                 executed_at=start_time,
                 duration_ms=duration_ms,
-                query=sql_query if user.is_superuser else None
+                query=str(sql_query) if user.is_superuser else None
             )
             
         except Exception as e:

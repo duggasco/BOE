@@ -2,6 +2,8 @@
 Celery application configuration for async tasks.
 """
 from celery import Celery
+from celery.schedules import crontab
+from datetime import timedelta
 from app.core.config import settings
 
 # Create Celery instance
@@ -31,10 +33,23 @@ celery_app.conf.update(
     worker_max_tasks_per_child=1000,
     result_expires=3600,  # 1 hour
     beat_schedule={
-        # Scheduled tasks can be defined here
+        # Check for schedules to execute every minute
+        "check-schedules": {
+            "task": "app.tasks.schedule_tasks.check_and_execute_schedules",
+            "schedule": crontab(minute='*'),  # Every minute
+            "options": {"queue": "schedules"}
+        },
+        # Clean up expired exports every hour
         "cleanup-old-exports": {
             "task": "app.tasks.export_tasks.cleanup_old_exports",
-            "schedule": 3600.0,  # Every hour
+            "schedule": crontab(minute=0),  # Every hour at :00
+            "options": {"queue": "exports"}
+        },
+        # Update schedule next run times every 5 minutes
+        "update-schedule-next-runs": {
+            "task": "app.tasks.schedule_tasks.update_next_run_times",
+            "schedule": crontab(minute='*/5'),  # Every 5 minutes
+            "options": {"queue": "schedules"}
         },
     },
     # Task routing

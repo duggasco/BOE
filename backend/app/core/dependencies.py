@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.models import User
 from app.services.user_service import UserService
+from app.services.rbac_service import RBACService
 
 # OAuth2 scheme for token authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/auth/token")
@@ -131,3 +132,17 @@ async def get_optional_user(
         return await get_current_user(token, db)
     except HTTPException:
         return None
+
+
+def get_rbac_service(db: AsyncSession = Depends(get_db)) -> RBACService:
+    """
+    Get an RBAC service instance.
+    The service instance is scoped to the request through the database session.
+    
+    Args:
+        db: Database session
+        
+    Returns:
+        RBACService instance for the current request
+    """
+    return RBACService(db)
