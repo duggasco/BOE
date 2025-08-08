@@ -2,7 +2,105 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
-## [0.35.0] - 2025-08-08 (Latest)
+## [0.37.0] - 2025-08-08 (Latest)
+
+### Added - Phase 4 Report Management Implementation (60% Complete)
+
+#### Redux Report Management
+Successfully implemented complete report CRUD operations with backend integration:
+
+**Report Redux Slice**:
+- Async thunks for all operations (fetch, create, update, delete, clone, execute)
+- Export functionality with job tracking (CSV, Excel, PDF)
+- Proper pagination with total count from backend
+- State synchronization after CRUD operations (refetch pattern)
+- Comprehensive error handling with pending/fulfilled/rejected states
+
+**ReportList Component Updates**:
+- Connected to real backend API via Redux
+- Permission-based UI (canCreate, canEdit, canDelete)
+- Memoized columns for performance optimization
+- Confirmation dialogs with React content
+- Clone functionality with automatic naming
+- Responsive design with mobile support
+
+#### Backend Pagination Fix
+- Created `PaginatedResponse<T>` generic schema
+- Updated `/reports` endpoint to return total count
+- Proper database count query before pagination
+- Frontend now displays accurate total records
+
+#### Gemini AI Critical Review Fixes
+All issues identified by Gemini have been addressed:
+
+**Fixed Bugs**:
+1. **Pagination Bug**: Backend now returns total count from database
+2. **State Desync**: CRUD operations now refetch current page
+3. **Side Effects**: Removed file download from reducer
+4. **Missing States**: Added pending/rejected for all export operations
+5. **Performance**: Memoized columns and callbacks with useMemo/useCallback
+
+**Gemini Assessment**: "Addressing these points will make your report management feature more robust, performant, and bug-free."
+
+### Testing
+- Authentication flow confirmed working
+- Report list loads from backend API
+- Pagination displays correct total count
+- CRUD operations maintain state consistency
+
+## [0.36.0] - 2025-08-08
+
+### Added - Phase 4 Frontend-Backend Integration Started (35% Complete)
+
+#### API Client Infrastructure
+Successfully implemented comprehensive API integration layer:
+
+**API Client Features**:
+- Axios interceptors for automatic token management
+- JWT refresh token flow with request queuing
+- Comprehensive error handling and formatting
+- Development logging for request/response debugging
+- Token expiry tracking and automatic refresh
+
+**Service Layer Created**:
+- **AuthService**: OAuth2 password flow, user management, permission checking
+- **ReportService**: Full CRUD operations, execute, clone, export methods
+- **FieldService**: Metadata operations, field hierarchy, relationships
+
+**Redux Authentication**:
+- Global auth state management with async thunks
+- Session expiry handling
+- Login redirect management
+- Permission and role selectors
+- Integrated with existing useAuth hook
+
+**Login Page Implementation**:
+- Professional UI with gradient background
+- Demo credential quick-fill buttons
+- Form validation with error messages
+- Remember me functionality
+- SSO placeholder for future implementation
+
+#### Gemini AI Security Review
+Critical feedback received on implementation:
+
+**Security Vulnerabilities**:
+- **CRITICAL**: JWT tokens stored in localStorage vulnerable to XSS attacks
+- **Recommendation**: Move refresh tokens to HttpOnly cookies (requires backend change)
+- **Good**: Token refresh mechanism with race condition handling well-implemented
+
+**Architecture Feedback**:
+- Need to centralize all API calls through single client
+- Add axios-retry for network resilience
+- Improve error handling for better UX (avoid hard redirects)
+
+### Testing
+- Successfully tested authentication flow with Playwright MCP
+- Login with demo credentials working
+- Token refresh mechanism verified
+- Protected routes functioning correctly
+
+## [0.35.0] - 2025-08-08
 
 ### Added - Phase 3 Complete with Testing & Export System
 

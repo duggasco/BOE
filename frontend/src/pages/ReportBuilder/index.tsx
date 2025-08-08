@@ -16,7 +16,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { DndContext } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 
-import FieldSelector from '../../components/ReportBuilder/FieldSelector';
+import FieldSelectorWithAPI from '../../components/ReportBuilder/FieldSelectorWithAPI';
 import ReportCanvas from '../../components/ReportBuilder/ReportCanvas';
 import PropertiesPanel from '../../components/ReportBuilder/PropertiesPanel';
 import ExportDialog from '../../components/ReportBuilder/ExportDialog';
@@ -359,7 +359,7 @@ const ReportBuilder: React.FC = () => {
               trigger={null}
               data-tour="field-selector"
             >
-              <FieldSelector />
+              <FieldSelectorWithAPI />
             </Sider>
             
             <Content className={styles.canvas} style={{ marginRight: 0 }} data-tour="canvas">

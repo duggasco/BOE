@@ -3,10 +3,13 @@ Report schemas for API validation
 """
 
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Generic, TypeVar
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 from app.models.report import ReportType
+
+# Generic type for paginated responses
+T = TypeVar('T')
 
 
 class ReportSection(BaseModel):
@@ -124,7 +127,17 @@ class ReportExecution(ReportExecutionBase):
 
 class ReportExecutionWithDetails(ReportExecution):
     report: Optional[ReportBase] = None
-    executed_by: Optional['UserBase'] = None
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    """Generic paginated response"""
+    items: List[T]
+    total: int
+    skip: int
+    limit: int
+    
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class ReportVersionBase(BaseModel):

@@ -1,0 +1,142 @@
+/**
+ * Login Page Styles
+ */
+
+.login-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 0;
+}
+
+.login-background-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px),
+    repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(255,255,255,.05) 35px, rgba(255,255,255,.05) 70px);
+}
+
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-logo {
+  font-size: 48px;
+  color: #667eea;
+  margin-bottom: 16px;
+}
+
+.login-title {
+  margin: 0 0 8px 0 !important;
+  color: #1a1f2e;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .login-card {
+    max-width: 100%;
+    margin: 0 16px;
+  }
+  
+  .login-logo {
+    font-size: 36px;
+  }
+  
+  .login-title {
+    font-size: 20px !important;
+  }
+}
+
+/* Form customizations */
+.ant-form-item-label > label {
+  font-weight: 500;
+}
+
+.ant-input-affix-wrapper-lg {
+  padding: 8px 11px;
+}
+
+.ant-btn-primary {
+  height: 40px;
+  font-size: 16px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b42a0 100%);
+}
+
+/* Alert customizations */
+.ant-alert-info {
+  background-color: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.ant-alert-error {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+}
+
+/* Loading state */
+.ant-btn-loading-icon {
+  margin-right: 8px;
+}
+
+/* Link hover effects */
+.ant-typography a:hover {
+  color: #667eea;
+}
+
+/* Checkbox styling */
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner {
+  border-color: #667eea;
+}
+
+/* Divider styling */
+.ant-divider-inner-text {
+  color: #999;
+  font-size: 14px;
+}

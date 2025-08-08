@@ -17,7 +17,8 @@ from app.schemas.report import (
     ReportCreate, ReportUpdate, Report as ReportSchema,
     ReportWithDetails, FolderCreate, FolderUpdate,
     Folder as FolderSchema, FolderWithReports,
-    ReportVersion as ReportVersionSchema
+    ReportVersion as ReportVersionSchema,
+    PaginatedResponse
 )
 from app.api.auth import get_current_user
 from app.services.report_service import ReportService
@@ -27,7 +28,7 @@ from app.core.rate_limit import rate_limit
 router = APIRouter(prefix="/api/v1/reports", tags=["Reports"])
 
 
-@router.get("/", response_model=List[ReportWithDetails])
+@router.get("/", response_model=PaginatedResponse[ReportWithDetails])
 @rate_limit()
 async def list_reports(
     db: AsyncSession = Depends(get_db),
@@ -92,6 +93,17 @@ async def list_reports(
     if filters:
         query = query.where(and_(*filters))
     
+    # Get total count before pagination
+    count_query = select(func.count(Report.id))
+    if filters:
+        count_query = count_query.where(and_(*filters))
+    if not current_user.is_superuser:
+        accessible_reports = await service.get_accessible_reports(current_user)
+        count_query = count_query.where(Report.id.in_(accessible_reports))
+    
+    total_result = await db.execute(count_query)
+    total = total_result.scalar() or 0
+    
     # Apply sorting and pagination
     query = query.order_by(Report.updated_at.desc())
     query = query.offset(skip).limit(limit)
@@ -99,42 +111,18 @@ async def list_reports(
     result = await db.execute(query)
     reports = result.scalars().all()
     
-    # Add additional metadata
-    report_list = []
-    for report in reports:
-        report_dict = report.__dict__.copy()
-        
-        # Get execution count
-        exec_count = await db.execute(
-            select(func.count(ReportExecution.id)).where(
-                ReportExecution.report_id == report.id
-            )
-        )
-        report_dict['execution_count'] = exec_count.scalar() or 0
-        
-        # Get last execution status
-        last_exec = await db.execute(
-            select(ReportExecution).where(
-                ReportExecution.report_id == report.id
-            ).order_by(ReportExecution.started_at.desc()).limit(1)
-        )
-        last_exec_result = last_exec.scalar_one_or_none()
-        if last_exec_result:
-            report_dict['last_execution'] = {
-                'status': last_exec_result.status,
-                'started_at': last_exec_result.started_at,
-                'completed_at': last_exec_result.completed_at
-            }
-        
-        report_list.append(report_dict)
-    
     # Log audit
     await AuditService.log(
         db, current_user, 'list_reports', 'reports',
-        details={'count': len(reports), 'filters': {'folder_id': folder_id, 'search': search}}
+        details={'count': len(reports), 'total': total, 'filters': {'folder_id': folder_id, 'search': search}}
     )
     
-    return report_list
+    return PaginatedResponse(
+        items=reports,
+        total=total,
+        skip=skip,
+        limit=limit
+    )
 
 
 @router.get("/{report_id}", response_model=ReportWithDetails)

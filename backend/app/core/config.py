@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:5173",  # Vite dev server
         "http://localhost:3000",  # Alternative frontend
+        "http://frontend:5173",   # Docker frontend service
     ]
 
     # Database configuration

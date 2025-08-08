@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
 import structlog
 
 from app.core.config import settings
@@ -101,7 +102,7 @@ async def health_check():
     try:
         # Check database connection
         async with engine.connect() as conn:
-            await conn.execute("SELECT 1")
+            await conn.execute(text("SELECT 1"))
         
         return {
             "status": "healthy",
