@@ -1,0 +1,49 @@
+# Core FastAPI dependencies
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.25
+asyncpg==0.29.0
+alembic==1.13.1
+
+# Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-oauth2==1.1.1
+
+# Data validation and serialization
+pydantic==2.5.3
+pydantic-settings==2.1.0
+email-validator==2.1.0
+
+# Background tasks
+celery==5.3.4
+redis==5.0.1
+flower==2.0.1  # Celery monitoring
+
+# Data processing and exports
+pandas==2.1.4
+openpyxl==3.1.2
+xlsxwriter==3.1.9
+reportlab==4.0.8
+weasyprint==60.2  # For PDF generation
+
+# Utilities
+python-dotenv==1.0.0
+httpx==0.26.0  # Async HTTP client
+aiofiles==23.2.1  # Async file operations
+
+# Development and testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+pytest-cov==4.1.0
+black==23.12.1
+flake8==7.0.0
+mypy==1.8.0
+pre-commit==3.6.0
+
+# Monitoring and logging
+prometheus-fastapi-instrumentator==6.1.0
+structlog==24.1.0

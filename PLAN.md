@@ -91,14 +91,15 @@ Node.js 20+ LTS
 
 ### Backend Stack (PLANNED - Phase 3)
 ```
-Python Microservices Architecture
-├── BFF Layer: Node.js + Express
-├── Scheduling Service: Python + Celery + Redis
-├── Export Engine: Python + pandas + openpyxl
-├── Query Service: Python + SQLAlchemy
-├── Auth Service: Python + JWT + OAuth2
+Python FastAPI Architecture
+├── API Gateway: FastAPI with auto-documentation
+├── Auth Service: FastAPI + JWT + OAuth2
+├── Query Service: FastAPI + SQLAlchemy + Pydantic
+├── Export Service: FastAPI + Celery + pandas/openpyxl
+├── Scheduling Service: FastAPI + Celery + Redis
+├── Report Service: FastAPI + PostgreSQL
 ├── File Storage: MinIO or S3-compatible
-└── Message Queue: Redis + Bull
+└── Message Queue: Redis + Celery
 ```
 
 ### Database Architecture (PLANNED)
@@ -178,19 +179,23 @@ PostgreSQL (Primary Database)
    - PostgreSQL installation and configuration
    - Schema design based on frontend requirements
    - Migration from mock to real test data
-   - Connection pooling and optimization
+   - Connection pooling with asyncpg
+   - Alembic for migrations
 
-2. **Python Microservices**
-   - Scheduling Service (Python + Celery)
-   - Export Engine (Python + pandas)
-   - Query Service (Python + SQLAlchemy)
-   - Authentication Service (JWT + OAuth2)
+2. **FastAPI Backend Services**
+   - Main API Gateway (FastAPI + Pydantic)
+   - Auth Service (FastAPI + JWT + OAuth2)
+   - Query Service (FastAPI + SQLAlchemy + async)
+   - Export Service (FastAPI + Celery + pandas)
+   - Scheduling Service (FastAPI + Celery + Redis)
+   - Report Service (FastAPI + PostgreSQL)
 
-3. **API Gateway (BFF)**
-   - Node.js + Express setup
-   - Request orchestration
-   - Authentication middleware
-   - Rate limiting
+3. **API Features**
+   - Automatic OpenAPI documentation
+   - Request/response validation with Pydantic
+   - Dependency injection for auth/db
+   - Built-in CORS and rate limiting
+   - WebSocket support for real-time updates
 
 ### Phase 4: Frontend-Backend Integration (Weeks 10-11)
 **Goal**: Connect approved frontend to real backend
@@ -227,11 +232,13 @@ PostgreSQL (Primary Database)
 
 ## Key Technical Decisions
 
-### 1. Microservices over Monolith (NEW)
-- **Python for heavy lifting** (data processing, exports)
-- **Node.js BFF** for API orchestration
-- **True containerization** with Docker
-- **Better tool selection** for each domain
+### 1. Python FastAPI Architecture (Updated)
+- **Single language backend** (Python throughout)
+- **FastAPI for all services** (consistency and simplicity)
+- **Modular monolith option** (can split to microservices later)
+- **Automatic API documentation** with OpenAPI/Swagger
+- **Type safety** with Pydantic models
+- **Better performance** than traditional Python frameworks
 
 ### 2. Ultra-Lightweight Frontend
 - **Minimal dependencies** approach validated
@@ -323,10 +330,11 @@ PostgreSQL (Primary Database)
 4. Document API contracts for Phase 3
 
 ### Phase 3 Planning
-1. Set up Python development environment
-2. Design microservices architecture
-3. Create API specifications
-4. Plan database migrations
+1. Set up FastAPI project structure
+2. Design modular service architecture
+3. Create Pydantic models for API contracts
+4. Implement Alembic migrations
+5. Configure async database connections
 
 ## Critical Implementation Notes
 

@@ -274,57 +274,91 @@
   - [ ] Metadata schema
   - [ ] Security schema
   - [ ] Data schema
-- [ ] Create migration scripts
+- [ ] Setup Alembic for migrations
+- [ ] Create initial migration scripts
 - [ ] Load real test data
-- [ ] Setup connection pooling
+- [ ] Setup async connection pooling (asyncpg)
 - [ ] Configure backup procedures
 
-### API Development
-- [ ] Initialize Node.js + TypeScript project
-- [ ] Setup Express/Fastify server
-- [ ] Configure middleware:
-  - [ ] CORS
-  - [ ] Body parsing
-  - [ ] Compression
-  - [ ] Rate limiting
+### FastAPI Backend Development
+- [ ] Initialize FastAPI project structure:
+  - [ ] Create virtual environment
+  - [ ] Setup project layout (api, services, models, schemas)
+  - [ ] Configure pyproject.toml or requirements.txt
+- [ ] Setup FastAPI application:
+  - [ ] Main application with routers
+  - [ ] CORS middleware configuration
+  - [ ] Exception handlers
+  - [ ] Request/response logging
+- [ ] Create Pydantic models:
+  - [ ] Request/response schemas
+  - [ ] Validation rules
+  - [ ] Serialization settings
 - [ ] Implement authentication:
-  - [ ] JWT generation
-  - [ ] Token validation
-  - [ ] Refresh tokens
-  - [ ] Session management
+  - [ ] JWT token generation
+  - [ ] OAuth2 password flow
+  - [ ] Dependency injection for current user
+  - [ ] Permission decorators
 
-### Core API Endpoints
-- [ ] Report management:
-  - [ ] GET /reports
-  - [ ] GET /reports/:id
-  - [ ] POST /reports
-  - [ ] PUT /reports/:id
-  - [ ] DELETE /reports/:id
-- [ ] Field metadata:
-  - [ ] GET /fields
-  - [ ] GET /fields/:id
-  - [ ] GET /relationships
-- [ ] Query execution:
-  - [ ] POST /execute
-  - [ ] GET /results/:id
-  - [ ] POST /preview
+### Core FastAPI Endpoints
+- [ ] Report management router:
+  - [ ] GET /api/reports (with pagination)
+  - [ ] GET /api/reports/{report_id}
+  - [ ] POST /api/reports
+  - [ ] PUT /api/reports/{report_id}
+  - [ ] DELETE /api/reports/{report_id}
+- [ ] Field metadata router:
+  - [ ] GET /api/fields
+  - [ ] GET /api/fields/{field_id}
+  - [ ] GET /api/fields/relationships
+- [ ] Query execution router:
+  - [ ] POST /api/query/execute
+  - [ ] GET /api/query/results/{result_id}
+  - [ ] POST /api/query/preview
+  - [ ] WebSocket /api/query/stream
+- [ ] Authentication router:
+  - [ ] POST /api/auth/token
+  - [ ] POST /api/auth/refresh
+  - [ ] GET /api/auth/me
+  - [ ] POST /api/auth/logout
 
-### Query Engine
+### Query Engine (SQLAlchemy + AsyncIO)
+- [ ] Async SQLAlchemy setup:
+  - [ ] Async engine configuration
+  - [ ] Session factory with dependency injection
+  - [ ] Connection pool tuning
 - [ ] SQL query builder:
-  - [ ] SELECT generation
-  - [ ] JOIN resolution
-  - [ ] WHERE conditions
-  - [ ] GROUP BY/HAVING
-  - [ ] ORDER BY
+  - [ ] Dynamic SELECT generation
+  - [ ] JOIN resolution from metadata
+  - [ ] WHERE clause builder
+  - [ ] GROUP BY/HAVING support
+  - [ ] ORDER BY with nulls handling
 - [ ] Query optimization:
-  - [ ] Index usage
   - [ ] Query plan analysis
-  - [ ] Caching strategy
+  - [ ] Index hints
+  - [ ] Redis caching layer
 - [ ] Result processing:
-  - [ ] Pagination
-  - [ ] Aggregations
-  - [ ] Pivoting
-  - [ ] Formatting
+  - [ ] Async pagination
+  - [ ] Streaming large results
+  - [ ] Aggregation functions
+  - [ ] Pivot table support
+  - [ ] DataFrame conversion for exports
+
+### Background Tasks (Celery + Redis)
+- [ ] Celery configuration:
+  - [ ] Redis broker setup
+  - [ ] Task queues (high, medium, low priority)
+  - [ ] Worker configuration
+- [ ] Export tasks:
+  - [ ] CSV generation task
+  - [ ] Excel generation with pandas
+  - [ ] PDF generation with reportlab
+  - [ ] Progress tracking
+- [ ] Scheduling tasks:
+  - [ ] Cron job execution
+  - [ ] Report execution task
+  - [ ] Email delivery task
+  - [ ] Retry logic
 
 ## Phase 4: Frontend-Backend Integration 🔌
 

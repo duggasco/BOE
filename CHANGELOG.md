@@ -2,6 +2,48 @@
 
 All notable changes to the BOE Replacement System will be documented in this file.
 
+## [0.29.0] - 2025-08-08 (Latest)
+
+### Changed - Backend Architecture Decision
+
+#### Pivoted to FastAPI for Entire Backend
+Made strategic decision to use FastAPI instead of Node.js + Express for the backend:
+
+**Rationale:**
+- **Single Language Backend**: Python throughout reduces complexity
+- **Better Developer Experience**: Automatic API docs, type validation with Pydantic
+- **Performance**: FastAPI is one of the fastest Python frameworks
+- **Consistency**: Shared models and utilities across all services
+- **Type Safety**: End-to-end type checking with Pydantic models
+
+**New Architecture:**
+```
+Frontend (React) 
+    ↓
+FastAPI Gateway
+    ├── Auth Service (FastAPI + JWT)
+    ├── Query Service (FastAPI + SQLAlchemy)  
+    ├── Export Service (FastAPI + Celery)
+    ├── Schedule Service (FastAPI + Celery)
+    └── Report Service (FastAPI + PostgreSQL)
+```
+
+**Benefits:**
+- Automatic OpenAPI/Swagger documentation
+- Built-in request/response validation
+- Dependency injection for auth/database
+- Async/await support throughout
+- WebSocket support for real-time updates
+- Can start as modular monolith, split to microservices later
+
+**Updated Phase 3 Plans:**
+- All backend services will use FastAPI
+- Pydantic for data validation and serialization
+- SQLAlchemy with async support
+- Alembic for database migrations
+- Celery for background tasks
+- Redis for caching and message queue
+
 ## [0.28.0] - 2025-08-08
 
 ### Added - Native Deployment Support (Phase 2.5)
