@@ -26,7 +26,7 @@ from celery.utils.log import get_task_logger
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.celery_app import celery_app
+from celery import shared_task
 from app.core.database import AsyncSessionLocal
 from app.models.report import Report, ReportExecution
 from app.models.user import User
@@ -71,7 +71,7 @@ def execute_report_query_sync(report_id: str, parameters: Optional[Dict] = None)
     ]
 
 
-@celery_app.task(base=ExportTask, bind=True, name="export.csv.secure")
+@shared_task(base=ExportTask, bind=True, name="export.csv.secure")
 def generate_csv_export(
     self,
     export_id: str,
@@ -166,7 +166,7 @@ def generate_csv_export(
         raise
 
 
-@celery_app.task(base=ExportTask, bind=True, name="export.excel.secure")
+@shared_task(base=ExportTask, bind=True, name="export.excel.secure")
 def generate_excel_export(
     self,
     export_id: str,
@@ -281,7 +281,7 @@ def generate_excel_export(
         raise
 
 
-@celery_app.task(base=ExportTask, bind=True, name="export.pdf.secure")
+@shared_task(base=ExportTask, bind=True, name="export.pdf.secure")
 def generate_pdf_export(
     self,
     export_id: str,
@@ -429,7 +429,7 @@ def generate_pdf_export(
 
 
 # Cleanup task for expired exports
-@celery_app.task(name="cleanup.expired.exports")
+@shared_task(name="cleanup.expired.exports")
 def cleanup_expired_exports_task():
     """
     Clean up expired export files

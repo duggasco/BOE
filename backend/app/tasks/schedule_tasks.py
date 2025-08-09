@@ -3,6 +3,7 @@ Celery tasks for schedule management and execution
 """
 
 import asyncio
+import os
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 import uuid
@@ -15,15 +16,13 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 import pytz
 
-from app.tasks.task_config import ScheduleTask, get_task_retry_delay
-
 from app.core.config import settings
-from app.core.celery_app import celery_app
 from app.models.schedule import ExportSchedule, ScheduleExecution
 from app.models.export import Export
 from app.models.report import Report
 from app.services.export_service import ExportService
 from app.services.distribution_service import DistributionService
+from app.tasks.task_config import get_task_retry_delay
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +37,7 @@ async def get_db_session():
         yield session
 
 
-@celery_app.task(name="app.tasks.schedule_tasks.check_and_execute_schedules")
+@shared_task(name="app.tasks.schedule_tasks.check_and_execute_schedules")
 def check_and_execute_schedules():
     """
     Check all active schedules and execute those that are due.
@@ -98,7 +97,7 @@ async def _check_and_execute_schedules():
             return {"error": str(e)}
 
 
-@celery_app.task(name="app.tasks.schedule_tasks.execute_scheduled_export", bind=True, base=ScheduleTask)
+@shared_task(name="app.tasks.schedule_tasks.execute_scheduled_export", bind=True)
 def execute_scheduled_export(self, schedule_id: str):
     """
     Execute a scheduled export job.
@@ -220,7 +219,7 @@ async def _execute_scheduled_export(schedule_id: str, task_id: str) -> Dict[str,
             }
 
 
-@celery_app.task(name="app.tasks.schedule_tasks.update_next_run_times")
+@shared_task(name="app.tasks.schedule_tasks.update_next_run_times")
 def update_next_run_times():
     """
     Update next run times for all active schedules.
@@ -267,7 +266,7 @@ async def _update_next_run_times():
             return {"error": str(e)}
 
 
-@celery_app.task(name="app.tasks.schedule_tasks.test_schedule_configuration")
+@shared_task(name="app.tasks.schedule_tasks.test_schedule_configuration")
 def test_schedule_configuration(schedule_config: Dict[str, Any], distribution_config: Dict[str, Any]):
     """
     Test a schedule configuration to verify it's valid.

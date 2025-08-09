@@ -18,11 +18,6 @@ from celery.result import AsyncResult
 from app.models import User, Report, Export
 from app.schemas.export import ExportStatus, ExportFormat
 from app.services.report_service import ReportService
-from app.tasks.export_tasks import (
-    generate_csv_export,
-    generate_excel_export,
-    generate_pdf_export
-)
 from app.core.config import settings
 import logging
 
@@ -235,6 +230,13 @@ class ExportService:
         Returns:
             Celery task result
         """
+        # Import tasks here to avoid circular imports
+        from app.tasks.export_tasks import (
+            generate_csv_export,
+            generate_excel_export,
+            generate_pdf_export
+        )
+        
         task_map = {
             ExportFormat.CSV: generate_csv_export,
             ExportFormat.EXCEL: generate_excel_export,

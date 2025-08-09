@@ -10,12 +10,7 @@ from app.core.config import settings
 celery_app = Celery(
     "boe_worker",
     broker=settings.REDIS_URL,
-    backend=settings.REDIS_URL,
-    include=[
-        "app.tasks.export_tasks",
-        "app.tasks.schedule_tasks",
-        "app.tasks.email_tasks"
-    ]
+    backend=settings.REDIS_URL
 )
 
 # Configure Celery
@@ -40,8 +35,8 @@ celery_app.conf.update(
             "options": {"queue": "schedules"}
         },
         # Clean up expired exports every hour
-        "cleanup-old-exports": {
-            "task": "app.tasks.export_tasks.cleanup_old_exports",
+        "cleanup-expired-exports": {
+            "task": "cleanup.expired.exports",
             "schedule": crontab(minute=0),  # Every hour at :00
             "options": {"queue": "exports"}
         },
@@ -65,3 +60,6 @@ celery_app.conf.update(
     worker_send_task_events=True,
     task_send_sent_event=True,
 )
+
+# Auto-discover tasks in all installed apps
+celery_app.autodiscover_tasks(['app.tasks'])

@@ -36,7 +36,18 @@ class UserService:
     
     async def get_user(self, user_id: str) -> Optional[User]:
         """Get user by ID"""
-        return await self.db.get(User, user_id)
+        from uuid import UUID
+        # Convert string to UUID if needed
+        if isinstance(user_id, str):
+            try:
+                user_id = UUID(user_id)
+            except ValueError:
+                return None
+        
+        result = await self.db.execute(
+            select(User).where(User.id == user_id)
+        )
+        return result.scalar_one_or_none()
     
     async def create_user(self, user_in: UserCreate) -> User:
         """Create a new user"""

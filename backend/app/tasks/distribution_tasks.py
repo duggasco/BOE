@@ -13,7 +13,6 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from asgiref.sync import async_to_sync
 
-from app.core.celery_app import celery_app
 from app.core.config import settings
 from app.services.email_service import EmailService
 from app.services.distribution_service import DistributionService
@@ -27,10 +26,10 @@ engine = create_async_engine(str(settings.DATABASE_URL))
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
-@celery_app.task(
+@shared_task(
     bind=True,
-    max_retries=settings.MAIL_MAX_RETRIES,
-    default_retry_delay=settings.MAIL_RETRY_BACKOFF_BASE
+    max_retries=3,
+    default_retry_delay=60
 )
 def send_distribution_email(
     self,
@@ -210,7 +209,7 @@ async def _send_failure_notification(
             logger.error(f"Failed to send failure notification: {str(e)}")
 
 
-@celery_app.task(bind=True, max_retries=3)
+@shared_task(bind=True, max_retries=3)
 def send_batch_distribution_emails(
     self,
     export_id: str,
@@ -266,7 +265,7 @@ def send_batch_distribution_emails(
     }
 
 
-@celery_app.task
+@shared_task
 def test_email_configuration():
     """
     Test email configuration by attempting to connect to SMTP server.
@@ -280,7 +279,7 @@ def test_email_configuration():
     return async_to_sync(_test)()
 
 
-@celery_app.task
+@shared_task
 def send_test_email(recipient: str):
     """
     Send a test email to verify the email system is working.
@@ -294,7 +293,7 @@ def send_test_email(recipient: str):
     return async_to_sync(_send_test)()
 
 
-@celery_app.task(bind=True, max_retries=3)
+@shared_task(bind=True, max_retries=3)
 def distribute_report(
     self,
     export_id: str,
