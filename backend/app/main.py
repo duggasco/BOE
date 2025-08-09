@@ -82,7 +82,7 @@ app.include_router(auth.router, prefix=f"{settings.API_PREFIX}/auth", tags=["Aut
 app.include_router(reports.router, prefix=f"{settings.API_PREFIX}/reports", tags=["Reports"])
 app.include_router(query.router, prefix=f"{settings.API_PREFIX}/query", tags=["Query"])
 app.include_router(export.router, prefix=f"{settings.API_PREFIX}/export", tags=["Export"])
-app.include_router(schedule.router, prefix=f"{settings.API_PREFIX}/schedule", tags=["Schedule"])
+app.include_router(schedule.router, prefix=f"{settings.API_PREFIX}/schedules", tags=["Schedule"])
 app.include_router(fields.router, prefix=f"{settings.API_PREFIX}/fields", tags=["Fields"])
 
 

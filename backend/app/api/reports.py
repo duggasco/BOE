@@ -10,7 +10,7 @@ from sqlalchemy import select, func, and_
 from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
-from app.models import Report, ReportVersion, Folder, User, ReportExecution, Schedule
+from app.models import Report, ReportVersion, Folder, User, ReportExecution, ExportSchedule
 from app.schemas.report import (
     ReportCreate, ReportUpdate, Report as ReportSchema,
     ReportWithDetails, FolderCreate, FolderUpdate,
@@ -89,8 +89,8 @@ async def list_reports(
         report.execution_count = exec_count.scalar() or 0
         
         sched_count = await db.execute(
-            select(func.count()).select_from(Schedule).where(
-                Schedule.report_id == report.id
+            select(func.count()).select_from(ExportSchedule).where(
+                ExportSchedule.report_id == report.id
             )
         )
         report.schedule_count = sched_count.scalar() or 0

@@ -9,8 +9,7 @@ from app.models.field import (
     DecodeTable, FieldType, AggregationType
 )
 from app.models.schedule import (
-    Schedule, Distribution, ScheduleLog, 
-    ScheduleStatus, DistributionType
+    ExportSchedule, ScheduleExecution, DistributionTemplate
 )
 from app.models.export import Export, ExportStatus, ExportFormat
 
@@ -26,8 +25,7 @@ __all__ = [
     'DecodeTable', 'FieldType', 'AggregationType',
     
     # Schedule models
-    'Schedule', 'Distribution', 'ScheduleLog', 
-    'ScheduleStatus', 'DistributionType',
+    'ExportSchedule', 'ScheduleExecution', 'DistributionTemplate',
     
     # Export models
     'Export', 'ExportStatus', 'ExportFormat'

@@ -94,12 +94,62 @@ class LocalDistributionConfig(BaseModel):
 
 class EmailDistributionConfig(BaseModel):
     """Configuration for email distribution"""
-    recipients: List[str] = Field(..., description="Email recipients")
-    cc: Optional[List[str]] = []
-    bcc: Optional[List[str]] = []
-    subject: str = Field("Scheduled Report: {report_name}", description="Email subject")
-    body: str = Field("Please find the attached report.", description="Email body")
-    attach_report: bool = Field(True, description="Attach report to email")
+    recipients: List[str] = Field(..., description="Email recipients (To)")
+    cc: Optional[List[str]] = Field(default=[], description="CC recipients")
+    bcc: Optional[List[str]] = Field(default=[], description="BCC recipients")
+    subject: str = Field(
+        "Report: {report_name} - {date}",
+        description="Email subject with template variables"
+    )
+    message: Optional[str] = Field(
+        None,
+        description="Custom message to include in email body"
+    )
+    attach_report: bool = Field(
+        True,
+        description="Attach report to email (false for download link only)"
+    )
+    use_download_link: bool = Field(
+        False,
+        description="Force download link instead of attachment"
+    )
+    base_url: Optional[str] = Field(
+        None,
+        description="Base URL for download links"
+    )
+    priority: Optional[str] = Field(
+        "normal",
+        description="Email priority (low, normal, high)"
+    )
+    reply_to: Optional[str] = Field(
+        None,
+        description="Reply-to email address"
+    )
+    
+    @validator('recipients')
+    def validate_recipients(cls, v):
+        """Validate email addresses"""
+        if not v:
+            raise ValueError("At least one recipient is required")
+        # Basic email validation
+        import re
+        email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+        invalid = [email for email in v if not email_pattern.match(email)]
+        if invalid:
+            raise ValueError(f"Invalid email addresses: {', '.join(invalid)}")
+        return v
+    
+    @validator('cc', 'bcc')
+    def validate_cc_bcc(cls, v):
+        """Validate CC and BCC email addresses"""
+        if not v:
+            return v
+        import re
+        email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+        invalid = [email for email in v if not email_pattern.match(email)]
+        if invalid:
+            raise ValueError(f"Invalid email addresses: {', '.join(invalid)}")
+        return v
 
 
 class WebhookDistributionConfig(BaseModel):

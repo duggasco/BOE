@@ -8,9 +8,15 @@ import { ViewportProvider } from './contexts/ViewportContext';
 import MainLayout from './components/Layout/MainLayout';
 import ReportBuilder from './pages/ReportBuilder';
 import ReportList from './pages/ReportList';
-import ScheduleManager from './pages/ScheduleManager';
 import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
+// Schedule components
+import SchedulesIndex from './pages/Schedules';
+import ScheduleList from './pages/Schedules/ScheduleList';
+import ScheduleMonitor from './pages/Schedules/ScheduleMonitor';
+import ScheduleHistory from './pages/Schedules/ScheduleHistory';
+import TemplateManager from './pages/Schedules/TemplateManager';
+import ScheduleWizard from './pages/Schedules/ScheduleWizard';
 import { useAuth } from './hooks/useAuth';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { loadSampleReports } from './data/sampleReports';
@@ -24,19 +30,13 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 function App() {
-  console.log('App component rendering...');
-  
   useEffect(() => {
     // Load sample reports on app initialization
-    const loaded = loadSampleReports();
-    if (loaded) {
-      console.log('Sample reports loaded for demo');
-    }
+    loadSampleReports();
   }, []);
   
-  try {
-    return (
-      <ErrorBoundary>
+  return (
+    <ErrorBoundary>
         <Provider store={store}>
           <ThemeProvider>
             <ViewportProvider>
@@ -56,7 +56,14 @@ function App() {
                       <Route path="reports" element={<ReportList />} />
                       <Route path="reports/new" element={<ReportBuilder />} />
                       <Route path="reports/:id/edit" element={<ReportBuilder />} />
-                      <Route path="schedules" element={<ScheduleManager />} />
+                      {/* Schedule Routes */}
+                      <Route path="schedules" element={<ScheduleList />} />
+                      <Route path="schedules/monitor" element={<ScheduleMonitor />} />
+                      <Route path="schedules/history" element={<ScheduleHistory />} />
+                      <Route path="schedules/:scheduleId/history" element={<ScheduleHistory />} />
+                      <Route path="schedules/templates" element={<TemplateManager />} />
+                      <Route path="schedules/new" element={<ScheduleWizard />} />
+                      <Route path="schedules/:id/edit" element={<ScheduleWizard />} />
                       <Route path="admin" element={<AdminPanel />} />
                       <Route path="test-error" element={<ErrorTestComponent />} />
                     </Route>
@@ -66,12 +73,8 @@ function App() {
             </ViewportProvider>
           </ThemeProvider>
         </Provider>
-      </ErrorBoundary>
-    );
-  } catch (error) {
-    console.error('App rendering error:', error);
-    return <div>Error loading app: {String(error)}</div>;
-  }
+    </ErrorBoundary>
+  );
 }
 
 export default App

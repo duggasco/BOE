@@ -8,6 +8,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional
 import logging
+from itsdangerous import URLSafeTimedSerializer
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,6 +23,42 @@ class DistributionService:
     
     def __init__(self, db: AsyncSession):
         self.db = db
+        # Initialize URL serializer for signed URLs
+        self.url_serializer = URLSafeTimedSerializer(
+            settings.SECRET_KEY,
+            salt='export-download'
+        )
+    
+    def generate_signed_download_url(self, export_id: str, base_url: str = None) -> str:
+        """Generate a signed URL with expiry for secure downloads"""
+        if not base_url:
+            base_url = settings.BASE_URL or "http://localhost:8001"
+        
+        # Create signed token with export ID
+        token = self.url_serializer.dumps(export_id)
+        
+        # Return URL with signed token
+        return f"{base_url}/api/v1/exports/download/{token}"
+    
+    def verify_download_token(self, token: str, max_age: int = None) -> Optional[str]:
+        """Verify a download token and return the export ID if valid
+        
+        Args:
+            token: The signed token
+            max_age: Maximum age in seconds (uses settings if not provided)
+        
+        Returns:
+            Export ID if valid, None otherwise
+        """
+        if max_age is None:
+            max_age = settings.EXPORT_DOWNLOAD_URL_EXPIRY_SECONDS
+            
+        try:
+            export_id = self.url_serializer.loads(token, max_age=max_age)
+            return export_id
+        except Exception as e:
+            logger.warning(f"Invalid download token: {e}")
+            return None
         
     async def distribute(
         self,
@@ -170,27 +207,105 @@ class DistributionService:
         report_name: str
     ) -> Dict[str, Any]:
         """
-        Distribute export via email.
-        This is a placeholder for email distribution implementation.
+        Distribute export via email using the EmailService.
+        Supports both direct attachment and download links for large files.
         """
         try:
-            # Email implementation will be added in Phase 5.2
+            from app.services.email_service import EmailService
+            
+            # Get email configuration
             recipients = config.get("recipients", [])
-            subject = config.get("subject", "Scheduled Report").format(
+            cc = config.get("cc", [])
+            bcc = config.get("bcc", [])
+            subject_template = config.get("subject", "Report: {report_name} - {date}")
+            custom_message = config.get("message", "")
+            
+            # Format subject with variables
+            subject = subject_template.format(
                 report_name=report_name,
                 schedule_name=schedule_name,
-                date=datetime.now().strftime("%Y-%m-%d")
+                date=datetime.now().strftime("%Y-%m-%d"),
+                time=datetime.now().strftime("%H:%M")
             )
             
-            logger.info(f"Email distribution placeholder: Would send to {recipients} with subject '{subject}'")
+            # Validate recipients
+            if not recipients:
+                return {
+                    "status": "failed",
+                    "error": "No email recipients specified",
+                    "timestamp": datetime.now().isoformat()
+                }
             
-            return {
-                "status": "pending",
-                "message": "Email distribution not yet implemented",
-                "recipients": recipients,
-                "subject": subject,
-                "timestamp": datetime.now().isoformat()
-            }
+            # Initialize email service
+            email_service = EmailService(self.db)
+            
+            # Check if email service is configured
+            if not email_service.is_configured():
+                logger.error("Email service not configured - check SMTP settings")
+                return {
+                    "status": "failed",
+                    "error": "Email service not configured",
+                    "message": "SMTP settings not properly configured",
+                    "timestamp": datetime.now().isoformat()
+                }
+            
+            # Get user_id from export if available
+            user_id = str(export.user_id) if export.user_id else None
+            
+            # Check file size to determine attachment vs link
+            file_size = source_path.stat().st_size
+            use_download_link = file_size > settings.MAIL_MAX_ATTACHMENT_SIZE
+            
+            # Generate signed download URL if needed
+            download_url = None
+            if use_download_link:
+                # Generate secure, time-limited signed URL
+                base_url = config.get("base_url", settings.BASE_URL or "http://localhost:8001")
+                download_url = self.generate_signed_download_url(export.id, base_url)
+                
+                logger.info(
+                    f"File too large for email attachment ({file_size} bytes), "
+                    f"using download link instead"
+                )
+            
+            # Send the email
+            result = await email_service.send_report_email(
+                report_name=report_name,
+                recipients=recipients,
+                export_path=source_path,
+                schedule_name=schedule_name,
+                user_id=user_id,
+                execution_id=config.get("execution_id"),
+                cc=cc,
+                bcc=bcc,
+                custom_subject=subject,
+                custom_message=custom_message,
+                include_link=use_download_link,
+                download_url=download_url
+            )
+            
+            if result["success"]:
+                logger.info(
+                    f"Successfully sent email to {len(recipients)} recipients "
+                    f"for report: {report_name}"
+                )
+                return {
+                    "status": "success",
+                    "recipients": recipients,
+                    "subject": subject,
+                    "method": "download_link" if use_download_link else "attachment",
+                    "file_size": file_size,
+                    "timestamp": result.get("timestamp", datetime.now().isoformat())
+                }
+            else:
+                logger.error(f"Email send failed: {result.get('error', 'Unknown error')}")
+                return {
+                    "status": "failed",
+                    "error": result.get("error", "Email send failed"),
+                    "message": result.get("message", ""),
+                    "retry": result.get("retry", False),
+                    "timestamp": datetime.now().isoformat()
+                }
             
         except Exception as e:
             logger.error(f"Error in email distribution: {str(e)}")

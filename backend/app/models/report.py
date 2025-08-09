@@ -44,7 +44,7 @@ class Report(Base):
     owner = relationship('User', back_populates='reports')
     folder = relationship('Folder', back_populates='reports')
     versions = relationship('ReportVersion', back_populates='report', cascade='all, delete-orphan')
-    schedules = relationship('Schedule', back_populates='report', cascade='all, delete-orphan')
+    schedules = relationship('ExportSchedule', back_populates='report', cascade='all, delete-orphan')
     executions = relationship('ReportExecution', back_populates='report', cascade='all, delete-orphan')
     exports = relationship('Export', back_populates='report', cascade='all, delete-orphan')
 
@@ -84,7 +84,7 @@ class ReportExecution(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     report_id = Column(UUID(as_uuid=True), ForeignKey('reports.id', ondelete='CASCADE'), nullable=False)
-    schedule_id = Column(UUID(as_uuid=True), ForeignKey('schedules.id', ondelete='SET NULL'))
+    schedule_id = Column(UUID(as_uuid=True), ForeignKey('export_schedules.id', ondelete='SET NULL'))
     executed_by_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='SET NULL'))
     
     # Execution details
@@ -105,4 +105,3 @@ class ReportExecution(Base):
     
     # Relationships
     report = relationship('Report', back_populates='executions')
-    schedule = relationship('Schedule', back_populates='executions')

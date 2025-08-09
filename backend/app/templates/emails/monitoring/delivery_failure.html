@@ -1,0 +1,131 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Report Delivery Failed{% endblock %}
+
+{% block header %}⚠️ Report Delivery Failure{% endblock %}
+
+{% block content %}
+    <h2 style="color: #dc3545;">Report delivery has failed</h2>
+    
+    <div class="warning" style="background-color: #f8d7da; border-color: #dc3545; color: #721c24;">
+        <p><strong>We were unable to deliver your scheduled report</strong></p>
+        <p>The system encountered an error while processing or delivering your report. Please see the details below.</p>
+    </div>
+    
+    <div class="info-box">
+        <h3>Failure Details</h3>
+        <table class="details">
+            <tr>
+                <td><strong>Report Name:</strong></td>
+                <td>{{ report_name }}</td>
+            </tr>
+            {% if schedule_name %}
+            <tr>
+                <td><strong>Schedule:</strong></td>
+                <td>{{ schedule_name }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td><strong>Scheduled Time:</strong></td>
+                <td>{{ scheduled_time }}</td>
+            </tr>
+            <tr>
+                <td><strong>Failed At:</strong></td>
+                <td>{{ failed_at }}</td>
+            </tr>
+            <tr>
+                <td><strong>Failure Type:</strong></td>
+                <td>{{ failure_type|default("Unknown") }}</td>
+            </tr>
+            {% if retry_count %}
+            <tr>
+                <td><strong>Retry Attempts:</strong></td>
+                <td>{{ retry_count }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    
+    {% if error_message %}
+    <div style="background-color: #fff; border: 1px solid #dc3545; border-radius: 5px; padding: 15px; margin: 20px 0;">
+        <h4 style="color: #dc3545; margin-top: 0;">Error Details</h4>
+        <pre style="background-color: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px;">{{ error_message }}</pre>
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px;">
+        <h3>What happens next?</h3>
+        
+        {% if will_retry %}
+        <div class="info-box" style="background-color: #cff4fc; border-left-color: #0dcaf0;">
+            <p><strong>Automatic Retry Scheduled</strong></p>
+            <p>The system will automatically retry delivering this report at:</p>
+            <p style="font-size: 18px; font-weight: bold; color: #0dcaf0;">{{ next_retry_time }}</p>
+            <p><small>This will be retry attempt #{{ retry_count + 1 }} of {{ max_retries }}</small></p>
+        </div>
+        {% else %}
+        <div class="warning">
+            <p><strong>No More Automatic Retries</strong></p>
+            <p>The system has exhausted all automatic retry attempts. Manual intervention may be required.</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div style="margin-top: 30px; background-color: #f8f9fa; padding: 20px; border-radius: 5px;">
+        <h3>Recommended Actions</h3>
+        <ol>
+            <li><strong>Check System Status:</strong> Verify that the BOE system is operational</li>
+            <li><strong>Review Report Configuration:</strong> Ensure the report query and parameters are valid</li>
+            <li><strong>Verify Data Availability:</strong> Confirm that required data sources are accessible</li>
+            <li><strong>Check Email Settings:</strong> If this is an email delivery failure, verify SMTP configuration</li>
+            <li><strong>Manual Execution:</strong> Try running the report manually through the web interface</li>
+            <li><strong>Contact Support:</strong> If the issue persists, contact your system administrator</li>
+        </ol>
+    </div>
+    
+    {% if admin_contact %}
+    <div style="margin-top: 20px; padding: 15px; background-color: #e8f5e9; border: 1px solid #4caf50; border-radius: 5px;">
+        <p><strong>Need immediate assistance?</strong></p>
+        <p>Contact your system administrator:</p>
+        <ul>
+            <li>Email: {{ admin_contact.email|default("admin@boe-system.local") }}</li>
+            <li>Phone: {{ admin_contact.phone|default("Extension 1234") }}</li>
+            <li>Support Portal: {{ admin_contact.portal|default("https://support.boe-system.local") }}</li>
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px;">
+        <h3>Troubleshooting Information</h3>
+        <details style="margin-top: 10px;">
+            <summary style="cursor: pointer; color: #667eea; font-weight: bold;">Click to view technical details</summary>
+            <div style="margin-top: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 3px; font-family: monospace; font-size: 11px;">
+                <p>Schedule ID: {{ schedule_id|default("N/A") }}</p>
+                <p>Execution ID: {{ execution_id|default("N/A") }}</p>
+                <p>User ID: {{ user_id|default("N/A") }}</p>
+                <p>Report ID: {{ report_id|default("N/A") }}</p>
+                <p>Server: {{ server_name|default("N/A") }}</p>
+                <p>Timestamp: {{ timestamp|default("N/A") }}</p>
+                {% if stack_trace %}
+                <p>Stack Trace:</p>
+                <pre style="overflow-x: auto; max-height: 200px; background-color: #fff; padding: 5px; border: 1px solid #ddd;">{{ stack_trace }}</pre>
+                {% endif %}
+            </div>
+        </details>
+    </div>
+    
+    {% if disable_schedule_link %}
+    <div style="margin-top: 20px; text-align: center;">
+        <p>To prevent further failures, you may want to:</p>
+        <a href="{{ disable_schedule_link }}" class="button" style="background-color: #dc3545;">
+            Disable This Schedule
+        </a>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block footer_extra %}
+    <p style="font-size: 11px; color: #999;">
+        This is an automated failure notification. Please do not reply to this email.
+    </p>
+{% endblock %}

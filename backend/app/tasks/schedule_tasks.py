@@ -15,6 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 import pytz
 
+from app.tasks.task_config import ScheduleTask, get_task_retry_delay
+
 from app.core.config import settings
 from app.core.celery_app import celery_app
 from app.models.schedule import ExportSchedule, ScheduleExecution
@@ -26,7 +28,7 @@ from app.services.distribution_service import DistributionService
 logger = logging.getLogger(__name__)
 
 # Create async engine for Celery tasks
-engine = create_async_engine(settings.DATABASE_URL, echo=False)
+engine = create_async_engine(str(settings.DATABASE_URL), echo=False)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
@@ -96,7 +98,7 @@ async def _check_and_execute_schedules():
             return {"error": str(e)}
 
 
-@celery_app.task(name="app.tasks.schedule_tasks.execute_scheduled_export", bind=True, max_retries=3)
+@celery_app.task(name="app.tasks.schedule_tasks.execute_scheduled_export", bind=True, base=ScheduleTask)
 def execute_scheduled_export(self, schedule_id: str):
     """
     Execute a scheduled export job.
@@ -110,8 +112,9 @@ def execute_scheduled_export(self, schedule_id: str):
         return result
     except Exception as e:
         logger.error(f"Error executing scheduled export {schedule_id}: {str(e)}")
-        # Retry with exponential backoff
-        raise self.retry(exc=e, countdown=60 * (2 ** self.request.retries))
+        # Retry with exponential backoff and jitter
+        retry_delay = get_task_retry_delay(self.request.retries)
+        raise self.retry(exc=e, countdown=retry_delay)
     finally:
         loop.close()
 

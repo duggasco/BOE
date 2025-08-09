@@ -1,0 +1,78 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Report: {{ report_name }}{% endblock %}
+
+{% block header %}Report Delivery Notification{% endblock %}
+
+{% block content %}
+    <h2>Your scheduled report is ready</h2>
+    
+    <div class="info-box">
+        <table class="details">
+            <tr>
+                <td><strong>Report Name:</strong></td>
+                <td>{{ report_name }}</td>
+            </tr>
+            {% if schedule_name %}
+            <tr>
+                <td><strong>Schedule:</strong></td>
+                <td>{{ schedule_name }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td><strong>Format:</strong></td>
+                <td>{{ format|upper }}</td>
+            </tr>
+            <tr>
+                <td><strong>Generated:</strong></td>
+                <td>{{ generated_at }}</td>
+            </tr>
+            {% if file_size %}
+            <tr>
+                <td><strong>File Size:</strong></td>
+                <td>{{ file_size }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    
+    {% if custom_message %}
+    <div class="info-box">
+        <p>{{ custom_message }}</p>
+    </div>
+    {% endif %}
+    
+    <div class="attachment-info">
+        <p>
+            <span class="icon">📎</span>
+            <strong>Report Attached</strong>
+        </p>
+        <p>The report has been attached to this email. You can download and save it for your records.</p>
+        <p><small>File name: {{ report_name }}_{{ generated_at|replace(" ", "_")|replace(":", "-") }}.{{ format|lower }}</small></p>
+    </div>
+    
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+        <h3>Need Help?</h3>
+        <p>If you have any questions about this report or need assistance:</p>
+        <ul>
+            <li>Contact your system administrator</li>
+            <li>Check the BOE System documentation</li>
+            <li>Visit the report configuration page to modify settings</li>
+        </ul>
+    </div>
+    
+    {% if unsubscribe_link %}
+    <div style="margin-top: 20px; font-size: 12px; color: #999;">
+        <p>You are receiving this email because you are subscribed to scheduled report notifications.
+        <a href="{{ unsubscribe_link }}" style="color: #667eea;">Manage your subscriptions</a></p>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block footer_extra %}
+    <p style="font-size: 11px; color: #999;">
+        Report ID: {{ report_id|default("N/A") }} | 
+        Schedule ID: {{ schedule_id|default("N/A") }} |
+        Execution ID: {{ execution_id|default("N/A") }}
+    </p>
+{% endblock %}

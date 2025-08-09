@@ -13,7 +13,7 @@ import logging
 
 from app.models import (
     Report, ReportVersion, Folder, User, 
-    ReportExecution, Schedule, ReportType
+    ReportExecution, ExportSchedule, ReportType
 )
 from app.schemas.report import (
     ReportCreate, ReportUpdate, ReportDefinition,
@@ -238,10 +238,10 @@ class ReportService:
         
         # Check if report has active schedules
         schedule_count = await self.db.scalar(
-            select(func.count()).select_from(Schedule)
+            select(func.count()).select_from(ExportSchedule)
             .where(and_(
-                Schedule.report_id == report_id,
-                Schedule.status == 'active'
+                ExportSchedule.report_id == report_id,
+                ExportSchedule.is_active == True
             ))
         )
         

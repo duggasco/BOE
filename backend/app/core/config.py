@@ -94,7 +94,35 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "json"  # or "text"
 
-    # Email settings (for notifications)
+    # Email settings (for notifications and report distribution)
+    MAIL_USERNAME: Optional[str] = None
+    MAIL_PASSWORD: Optional[str] = None
+    MAIL_FROM: str = "noreply@boe-system.local"
+    MAIL_FROM_NAME: str = "BOE System"
+    MAIL_PORT: int = 587
+    MAIL_SERVER: Optional[str] = None
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+    MAIL_USE_CREDENTIALS: bool = True
+    MAIL_VALIDATE_CERTS: bool = True
+    
+    # Email rate limiting
+    MAIL_MAX_PER_HOUR_GLOBAL: int = 1000  # Global rate limit
+    MAIL_MAX_PER_HOUR_USER: int = 50  # Per-user rate limit
+    MAIL_MAX_RECIPIENTS: int = 50  # Max recipients per email
+    MAIL_MAX_ATTACHMENT_SIZE: int = 10 * 1024 * 1024  # 10MB max for direct attachment
+    
+    # Email retry settings
+    MAIL_MAX_RETRIES: int = 5
+    MAIL_RETRY_BACKOFF_BASE: int = 10  # Base seconds for exponential backoff
+    
+    # Email template settings
+    MAIL_TEMPLATE_DIR: str = "app/templates/emails"
+    
+    # Export Download URL Configuration
+    EXPORT_DOWNLOAD_URL_EXPIRY_SECONDS: int = 86400  # 24 hours default
+    
+    # Legacy SMTP settings (kept for compatibility)
     SMTP_HOST: Optional[str] = None
     SMTP_PORT: int = 587
     SMTP_USER: Optional[str] = None

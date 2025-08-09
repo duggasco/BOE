@@ -1,0 +1,108 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Report: {{ report_name }} - Download Link{% endblock %}
+
+{% block header %}Report Ready for Download{% endblock %}
+
+{% block content %}
+    <h2>Your scheduled report is ready for download</h2>
+    
+    <div class="info-box">
+        <table class="details">
+            <tr>
+                <td><strong>Report Name:</strong></td>
+                <td>{{ report_name }}</td>
+            </tr>
+            {% if schedule_name %}
+            <tr>
+                <td><strong>Schedule:</strong></td>
+                <td>{{ schedule_name }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td><strong>Format:</strong></td>
+                <td>{{ format|upper }}</td>
+            </tr>
+            <tr>
+                <td><strong>Generated:</strong></td>
+                <td>{{ generated_at }}</td>
+            </tr>
+            <tr>
+                <td><strong>File Size:</strong></td>
+                <td>{{ file_size }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    {% if custom_message %}
+    <div class="info-box">
+        <p>{{ custom_message }}</p>
+    </div>
+    {% endif %}
+    
+    <div class="warning">
+        <p><strong>⚠️ Large File Notice</strong></p>
+        <p>This report file is too large to attach directly to the email. Please use the download link below to retrieve your report.</p>
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{ download_url }}" class="button" style="font-size: 16px; padding: 15px 30px;">
+            📥 Download Report
+        </a>
+        <p style="color: #666; font-size: 14px; margin-top: 10px;">
+            File size: {{ file_size }} | Format: {{ format|upper }}
+        </p>
+    </div>
+    
+    <div class="info-box" style="background-color: #fff3cd; border-left-color: #ffc107;">
+        <p><strong>Important:</strong></p>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            <li>This download link will expire in <strong>24 hours</strong></li>
+            <li>The link can only be used a limited number of times</li>
+            <li>Please download and save the report to your local system</li>
+            <li>Do not share this link with unauthorized users</li>
+        </ul>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <h3>Having trouble downloading?</h3>
+        <p>If you're unable to download the report:</p>
+        <ol>
+            <li>Copy and paste the link directly into your browser</li>
+            <li>Ensure you're connected to the corporate network or VPN</li>
+            <li>Check that the link hasn't expired (24 hours from generation)</li>
+            <li>Contact your system administrator if issues persist</li>
+        </ol>
+    </div>
+    
+    {% if alternative_access %}
+    <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+        <p><strong>Alternative Access:</strong></p>
+        <p>You can also access this report through the BOE web portal:</p>
+        <ol>
+            <li>Log in to the BOE System</li>
+            <li>Navigate to Reports → Export History</li>
+            <li>Find the report by name and date</li>
+            <li>Click the download icon</li>
+        </ol>
+    </div>
+    {% endif %}
+    
+    {% if unsubscribe_link %}
+    <div style="margin-top: 20px; font-size: 12px; color: #999;">
+        <p>You are receiving this email because you are subscribed to scheduled report notifications.
+        <a href="{{ unsubscribe_link }}" style="color: #667eea;">Manage your subscriptions</a></p>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block footer_extra %}
+    <p style="font-size: 11px; color: #999;">
+        Report ID: {{ report_id|default("N/A") }} | 
+        Schedule ID: {{ schedule_id|default("N/A") }} |
+        Execution ID: {{ execution_id|default("N/A") }}
+    </p>
+    <p style="font-size: 10px; color: #ccc; margin-top: 10px;">
+        Download link: {{ download_url|truncate(50) }}...
+    </p>
+{% endblock %}
